@@ -1,0 +1,31 @@
+\begin{thebibliography}{1}
+
+\bibitem{SpEC}
+SXS collaboration.
+\newblock Spectral einstein code.
+\newblock \url{https://black-holes.org/code/SpEC}.
+
+\bibitem{hartle}
+James~B. Hartle.
+\newblock {\em Gravity: an introduction to Einstein's general relativity}.
+\newblock Addison Wesley, 2003.
+
+\bibitem{APS_poster}
+Iago Mendes.
+\newblock Testing a new algorithm for isometric embedding of black hole
+  horizons.
+\newblock \url{https://meetings.aps.org/Meeting/APR23/Session/P01.49}, April
+  2023.
+
+\bibitem{Yau_2023}
+Daniel Pook-Kolb, Bowen Zhao, Lars Andersson, Badri Krishnan, and Shing-Tung
+  Yau.
+\newblock Properties of quasi-local mass in binary black hole mergers.
+\newblock \url{https://arxiv.org/abs/2308.10906}, 2023.
+
+\bibitem{WangYau_2009}
+Mu-Tao Wang and Shing-Tung Yau.
+\newblock Quasilocal mass in general relativity.
+\newblock {\em Phys. Rev. Lett.}, 102:021101, Jan 2009.
+
+\end{thebibliography}
