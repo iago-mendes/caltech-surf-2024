@@ -20,22 +20,22 @@
 	\RequirePackage{multicol}
 	\RequirePackage{subcaption}
 	\RequirePackage{fancyhdr}
-	\RequirePackage{cite}
+	\RequirePackage[sorting=none]{biblatex}
 
 
 % COLORS
+	\definecolor{red}{rgb}{1,0,0}
+	\definecolor{green}{rgb}{0,1,0}
+	\definecolor{blue}{rgb}{0,0,1}
+	\definecolor{link}{HTML}{387494}
+
 	\hypersetup {
 		colorlinks=true,
 		linkcolor=blue,
 		filecolor=magenta,      
-		urlcolor=blue,
-		citecolor=blue,
+		urlcolor=link,
+		citecolor=link,
 	}
-
-	\definecolor{red}{rgb}{1,0,0}
-	\definecolor{green}{rgb}{0,1,0}
-	\definecolor{blue}{rgb}{0,0,1}
-	\definecolor{ccqqqq}{rgb}{0.8,0,0}
 
 	\newcommand{\red}[1]{\textcolor{red}{#1}}
 	\newcommand{\green}[1]{\textcolor{green}{#1}}
@@ -66,19 +66,18 @@
 		{0cm} % separation
 		{} % before code
 		[] % after code
-	
-	% References
-	\bibliographystyle{plain}
 
 
 % COMMANDS
 
 	\newcommand{\header}[2][a] {
 		\begin{center}
+			\vspace*{1cm}
+
 			% Title
 			{\Large\bf #2}
 
-			\vspace{0.5cm}
+			\vspace*{1cm}
 			
 			% Subtitle
 			\def\argument{#1} \def\default{a}
@@ -88,17 +87,19 @@
 				{\large #1}
 			\fi
 
-			\vspace{0.1cm}
+			\vspace*{0.1cm}
 
 			\large
 			
 			% Author
 			Iago Mendes
 			
-			\vspace{0.1cm}
+			\vspace*{0.1cm}
 
 			% Date
 			\today
+
+			\vspace*{1cm}
 		\end{center}
 	}
 
