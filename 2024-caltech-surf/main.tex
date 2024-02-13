@@ -1,0 +1,90 @@
+\documentclass{../letter}
+
+\addbibresource{refs.bib}
+
+\renewcommand{\v}[1]{\boldsymbol{#1}}
+
+\begin{document}
+	\header
+		[Caltech SURF Project Proposal]
+		{Control of Black Hole Parameters for Binary Evolutions}
+
+	\section{Introduction \& Background}
+
+	Famously, the Einstein equations relate the curvature of spacetime to the stress-energy of matter, forming a system of ten nonlinear partial differential equations (PDEs). With the 3+1 formalism, we can rearrange these equations so that spacetime is described by spacelike three-dimensional slices of constant time \cite{Alcubierre}. In doing so, we find that four out of the ten equations do not involve time derivatives, implying that they are constraints that must be satisfied at all times. The remaining six equations describe an evolution of the constraint-satisfying fields.
+
+	Using this formalism, the Spectral Einstein Code (SpEC) \cite{SpEC} runs simulations of Binary Black Holes (BBH) by first finding initial data and then running an evolution on them. Over time, as SpEC faced more challenging BBH with high mass ratios and spins, several improvements had to be made to the initial data techniques, which are summarized in \cite{Serguei}.
+	
+	To enforce quasi-equilibrium conditions, SpEC uses the extended conformal thin-shandwich (XCTS) decomposition \cite{Serguei}, which transforms the constraint PDEs into a system of elliptic PDEs. Similar to any elliptic PDE problem, this system requires boundary conditions. Hence, SpEC has to choose \textit{free} data and impose them at the boundary. After this, the elliptic solver will be used on the XCTS equations. From the resulting fields, one can measure \textit{physical} parameters of the simulation, such as the black holes masses and spins, the total linear momentum and the center of mass. Before the elliptic solve, it is not possible to measure the physical parameters, but these are the quantities that we wish to control. Therefore, SpEC has to iterate over different choices of free data, trying to find the ones that result in the desired physical parameters.
+	
+	Despite its success in BBH simulations, SpEC shows its limitations in more challenging problems, such as binary neutron star mergers. In this context, SpECTRE \cite{SpECTRE} was created as a codebase that follows a parallelism model and aims to be more scalable \cite{Kidder}. As part of an effort to allow researchers to simulate BBH in SpECTRE, an initial data procedure similar to the one in SpEC needs to be completed. This is greatly benefitted by a scalable elliptic solver that was recently developed \cite{Vu}, which can now be used to solve the XCTS equations. Be as it may, SpECTRE does not currently have the iterative method to adjust the free data used as boundary conditions described above. As described in more detail in the next sections, this is the problem that this project aims to address.
+
+	Making BBH simulations available in SpECTRE is an important goal for its developers. Previous work has already shown that SpECTRE can be faster than SpEC when performing similar tasks due to its parallelism model \cite{Vu}. This indicates that, once BBH simulations are complete, it will allow the exploration of more extreme regions of the configuration space in a reasonable time scale.
+
+	\section{Objectives}
+
+	The main objective of this project will be implementing the control of \textit{physical} parameters of BBH simulations in SpECTRE. Specifically, during the initial data procedure, we need to control
+	\begin{enumerate}
+		\item the black hole masses $M_A$ and $M_B$;
+		\item the black hole spins $\v \chi_A$ and $\v \chi_B$;
+		\item the center of mass $\v C$; and
+		\item the total linear momentum $\v P$.
+	\end{enumerate}
+	
+	When running a simulation, users specify the masses $M_{A,B}^*$ and spins $\v \chi_{A,B}^*$ of the black holes they wish to simulate. Therefore, we want to drive $M_{A,B} - M_{A_B}^*$ and $\v \chi_{A,B} - \v \chi_{A_B}^*$ to zero. Similarly, we want to drive $\v C$ and $\v P$ to zero in order to minimize any drifts of the orbit for long simulations.
+	
+	As mentioned before, we can only measure these physical parameters after the elliptic solve of the XCTS equations. Similar to SpEC, the goal here is to apply an iterative scheme on the choice of boundary conditions, which is explained in further detail in the next section.
+
+	\section{Approach}
+
+	% Unfortunately, we cannot directly set the \textit{physical} parameters. Instead, we have to choose \textit{free} data that will give the desired \textit{physical} parameters after the elliptic solve of the XCTS equations. Specifically, we have to set
+	
+	Before running the elliptic solver on the XCTS equations, we have to choose \textit{free} data that will be used as boundary conditions. Specifically, we have to set
+	\begin{enumerate}
+		\item the apparent horizon radii $r_A$ and $r_B$;
+		\item the apparent horizon angular frequencies $\v \Omega_A$ and $\v \Omega_B$;
+		\item the first apparent horizon center $\v c_A$; and
+		\item a constant velocity $\v v_0$ used on the shift boundary condition.
+	\end{enumerate}
+
+	We can iterate through the choices of these free data simultaneously. While the overall idea of this iteration is described below, many technical details were omitted in the interest of conciseness. More details can be found in sections 2.3 and 2.5 of \cite{Serguei}.
+
+	In order to control the physical parameters $M_{A,B}$ and $\v\chi_{A,B}$, we need to determine the free data $r_{A,B}$ and $\v\Omega_{A,B}$. Let the choice of these eight values be represented as
+	\begin{equation}
+		\v u = (r_A, r_B, \v\Omega_A, \v\Omega_B)
+	\end{equation}
+	\cite{Serguei}. Also, let $\v F(\v u)$ represent the differences $M_{A,B} - M_{A,B}^*$ and $\v \chi_{A,B} - \v \chi_{A_B}^*$ \cite{Serguei}. Since we want to find the values of $\v u$ such that $\v F(\v u) = 0$, can perform root-finding iterations using a quasi-Newton method:
+	\begin{equation}
+		\v u_{k+1} = \v u_k - \v J_k^{-1} \v F(\v u_k)
+	\end{equation}
+	\cite{Serguei}, where the Jacobian $\v J_k$ is constructed once and then updated using Broyden's method (see equation (9) of \cite{Serguei}). We must continue this iteration until we reach the target residuals.
+
+	Additionally, in order to control the center of mass $\v C$, we fix the distance between the apparent horizon centers with $\v c_A - \v c_B = \v D$, where $\v D$ is specified by users \cite{Serguei}. With this, we can iteratively find the value of $\v c_A$ that makes $\v C = 0$ using equation (28) of \cite{Serguei}.
+
+	Finally, in order to control the total linear momentum $\v P$, we can add a constant velocity $\v v_0$ to the outer boundary condition of the shift, which will affect the overall motion of the system, resulting in a different $\v P$ \cite{Serguei}. Similar to before, we can now iterate to find values of $\v v_0$ that make $\v P = 0$ using equation (30) of \cite{Serguei}.
+
+	\section{Work Plan}
+
+	I outline below a tentative schedule for each week of the SURF program. In the action plan column, I describe the research project milestones and the program deadlines. Apart from that, I also plan to attend the weekly seminars, workshops, social activities and other events.
+
+	\begin{center}
+		\setlength{\tabcolsep}{0.5cm}
+		\def\arraystretch{1.5}
+		\begin{tabular}{cp{0.7\textwidth}}
+			\hline
+			\textbf{Week} & \textbf{Action Plan} \\ \hline
+			1 & Get used to SpECTRE development by following its \href{https://spectre-code.org/dev_guide.html}{developer guidelines}. Review relevant parts of \cite{Serguei} and related topics. \\
+			2 & Understand the initial data code infrastructure and how to interface with the elliptic solver. Prepare code for the iterations. \\
+			3 & Implement iterations for $r_{A,B}$ and $\v \Omega_{A,B}$. \\
+			4 & Test previous implementation. Write the first interim report. \\
+			5 & Implement iterations for $\v c_A$. \\
+			6 & Test previous implementation. \\
+			7 & Implement iterations for $\v v_0$. \\
+			8 & Test previous implementation. Write the second interim report. \\
+			9 & Write technical report and abstract. Prepare for oral presentation. \\
+			10 & Present at a SURF Seminar Day. Conclude any pending work. \\ \hline
+		\end{tabular}
+	\end{center}
+
+	\printbibliography
+\end{document}
