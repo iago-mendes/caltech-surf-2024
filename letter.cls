@@ -70,14 +70,14 @@
 
 % COMMANDS
 
-	\newcommand{\header}[2][a] {
+	\renewcommand{\title}[2][a] {
 		\begin{center}
-			\vspace*{1cm}
+			\vspace*{0.5cm}
 
 			% Title
 			{\Large\bf #2}
 
-			\vspace*{1cm}
+			\vspace*{0.5cm}
 			
 			% Subtitle
 			\def\argument{#1} \def\default{a}
