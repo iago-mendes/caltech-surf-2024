@@ -85,7 +85,7 @@
 
 	\renewcommand{\title}[3][noSubtitle] {
 		\begin{center}
-			\vspace*{0cm}
+			\vspace*{0.5cm}
 
 			% Title
 			{\Large\bf #3}
@@ -112,7 +112,7 @@
 			% Date
 			\today
 
-			\vspace*{0.75cm}
+			\vspace*{1cm}
 		\end{center}
 	}
 
