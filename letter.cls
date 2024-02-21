@@ -3,7 +3,7 @@
 \LoadClass[a4paper, 12pt]{article}
 
 % LIBRARIES
-	\RequirePackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
+	\RequirePackage[top=2cm, bottom=2.3cm, left=2cm, right=2cm, footskip=1.3cm]{geometry}
 	\RequirePackage[utf8]{inputenc}
 	\RequirePackage{graphicx, caption}
 	\RequirePackage{float}
@@ -21,6 +21,7 @@
 	\RequirePackage{subcaption}
 	\RequirePackage{fancyhdr}
 	\RequirePackage[sorting=none]{biblatex}
+	\RequirePackage{etoolbox}
 
 
 % COLORS
@@ -43,19 +44,40 @@
 	\newcommand{\gray}[1]{\textcolor{gray}{#1}}
 
 
-% HEADERS & FOOTERS
-	\pagestyle{fancy}
+% % HEADERS & FOOTERS
+	\fancypagestyle{default} {
+		\fancyhead{} % clear all header fields
+		\renewcommand{\headrule}{\hrulefill}
 
-	\fancyhead{} % clear all header fields
-	% \fancyhead[L]{}
-	% \fancyhead[R]{}
-
-	\renewcommand{\footrule}{
-		\hrulefill
+		\fancyfoot{} % clear all footer fields
+		\renewcommand{\footrule}{\hrulefill}
+		\fancyfoot[R]{\thepage}
 	}
+	\pagestyle{default}
 
-	\fancyfoot{} % clear all footer fields
-	\fancyfoot[C]{\thepage}
+	% Show footnotes in footer
+	\newcommand{\makefootnotelist}[1] {%
+		\parbox{0.8\textwidth} {%
+			\footnotesize{%
+				\renewcommand*{\do}[1]{##1\\}%
+				\dolistcsloop{#1}%
+			}%
+		}%
+	}%
+	\newcommand{\fnote}[1] {%
+		\footnotemark{}%
+		\def\listname{footlist\thepage}%
+		\def\n{$^{\the\numexpr\value{footnote}}$}%
+		\ifcsdef{\listname}%
+			{\listcseadd{\listname}{\n\ #1}}%
+			{\csedef{\listname}{}\listcseadd{\listname}{\n\ #1}}%
+		\fancypagestyle{fancyfootnote}{%
+			\fancyfoot[L]{\makefootnotelist{\listname}}%
+			\fancyfoot[R]{\thepage}%
+			\fancyfoot[C]{}%
+		}%
+		\thispagestyle{fancyfootnote}%
+	}
 
 
 % SECTIONS
@@ -72,7 +94,7 @@
 
 	\renewcommand{\title}[2][a] {
 		\begin{center}
-			\vspace*{0.5cm}
+			\vspace*{0cm}
 
 			% Title
 			{\Large\bf #2}
@@ -99,7 +121,7 @@
 			% Date
 			\today
 
-			\vspace*{1cm}
+			\vspace*{0.75cm}
 		\end{center}
 	}
 
