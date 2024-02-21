@@ -3,7 +3,7 @@
 \LoadClass[a4paper, 12pt]{article}
 
 % LIBRARIES
-	\RequirePackage[top=2cm, bottom=2.3cm, left=2cm, right=2cm, footskip=1.3cm]{geometry}
+	\RequirePackage[top=2cm, bottom=2cm, left=2cm, right=2cm, footskip=1cm]{geometry}
 	\RequirePackage[utf8]{inputenc}
 	\RequirePackage{graphicx, caption}
 	\RequirePackage{float}
@@ -21,6 +21,7 @@
 	\RequirePackage{subcaption}
 	\RequirePackage{fancyhdr}
 	\RequirePackage[sorting=none]{biblatex}
+	\RequirePackage[bottom, symbol]{footmisc}
 	\RequirePackage{etoolbox}
 
 
@@ -44,7 +45,7 @@
 	\newcommand{\gray}[1]{\textcolor{gray}{#1}}
 
 
-% % HEADERS & FOOTERS
+% HEADERS & FOOTERS
 	\fancypagestyle{default} {
 		\fancyhead{} % clear all header fields
 		\renewcommand{\headrule}{\hrulefill}
@@ -56,27 +57,17 @@
 	\pagestyle{default}
 
 	% Show footnotes in footer
-	\newcommand{\makefootnotelist}[1] {%
-		\parbox{0.8\textwidth} {%
-			\footnotesize{%
-				\renewcommand*{\do}[1]{##1\\}%
-				\dolistcsloop{#1}%
-			}%
-		}%
-	}%
+	\renewcommand{\footnoterule}{
+		\kern -3pt
+		\hrule width \textwidth
+		\kern 5pt
+	}
+	\fancypagestyle{footnote} {
+		\renewcommand{\footrule}{}
+	}
 	\newcommand{\fnote}[1] {%
-		\footnotemark{}%
-		\def\listname{footlist\thepage}%
-		\def\n{$^{\the\numexpr\value{footnote}}$}%
-		\ifcsdef{\listname}%
-			{\listcseadd{\listname}{\n\ #1}}%
-			{\csedef{\listname}{}\listcseadd{\listname}{\n\ #1}}%
-		\fancypagestyle{fancyfootnote}{%
-			\fancyfoot[L]{\makefootnotelist{\listname}}%
-			\fancyfoot[R]{\thepage}%
-			\fancyfoot[C]{}%
-		}%
-		\thispagestyle{fancyfootnote}%
+		\footnote{#1}%
+		\thispagestyle{footnote}%
 	}
 
 
@@ -92,17 +83,17 @@
 
 % COMMANDS
 
-	\renewcommand{\title}[2][a] {
+	\renewcommand{\title}[3][noSubtitle] {
 		\begin{center}
 			\vspace*{0cm}
 
 			% Title
-			{\Large\bf #2}
+			{\Large\bf #3}
 
 			\vspace*{0.5cm}
 			
 			% Subtitle
-			\def\argument{#1} \def\default{a}
+			\def\argument{#1} \def\default{noSubtitle}
 			\ifx\argument\default
 				{}
 			\else
@@ -114,7 +105,7 @@
 			\large
 			
 			% Author
-			Iago Mendes
+			#2
 			
 			\vspace*{0.1cm}
 
