@@ -73,12 +73,9 @@
 
 	Finally, in order to control the total linear momentum $\v P$, we can add a constant velocity $\v v_0$ to the outer boundary condition of the shift, which will affect the overall motion of the system, resulting in a different momentum \cite{Serguei}. Similar to before, we can now iterate to find values of $\v v_0$ that make $\v P = 0$ using
 	\begin{equation}
-		\begin{aligned}
-			\v v_{0,k+1} &= \v v_{0,k} - \frac{\v P_k}{M_k} + (\Delta M_{A,k} + \Delta M_{B,k}) (\v v_{0,k} + \v\Omega_0 \times \v c_{A,k}) \\
-			&\quad - \v\Omega_0 \times \delta \v c_{A,k} - \frac{\Delta M_{B,k}}{M_k} \v\Omega_0 \times \v D.
-		\end{aligned}
+			\v v_{0,k+1} = \v v_{0,k} - \frac{\v P_k}{M_k} + \Delta M_k (\v v_{0,k} + \v\Omega_0 \times \v c_{A,k}) - \v\Omega_0 \times \delta \v c_{A,k} - \frac{\Delta M_{B,k}}{M_k} \v\Omega_0 \times \v D.
 		\end{equation}
-	\cite{Serguei}, where $M_k = M_{A,k} + M_{B,k}$ \red{(check)}, $\v \Omega_0$ is the user-specified initial orbit angle \red{(check)}, and $\delta \v c_{A,k}$ is a small perturbation of $\v c_{A,k}$.
+	\cite{Serguei}, where $M_k = M_{A,k} + M_{B,k}$, $\v \Omega_0$ is the user-specified initial orbit angle, and $\delta \v c_{A,k}$ is a small perturbation of $\v c_{A,k}$.
 
 	\section{Work Plan}
 
