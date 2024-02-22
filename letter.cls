@@ -33,7 +33,7 @@
 
 	\hypersetup {
 		colorlinks=true,
-		linkcolor=link,
+		linkcolor=black,
 		filecolor=link,      
 		urlcolor=link,
 		citecolor=link,
