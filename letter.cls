@@ -3,7 +3,7 @@
 \LoadClass[a4paper, 12pt]{article}
 
 % LIBRARIES
-	\RequirePackage[top=2cm, bottom=2cm, left=2cm, right=2cm, footskip=1cm]{geometry}
+	\RequirePackage[top=2cm, bottom=2.5cm, left=2cm, right=2cm, footskip=1cm, headsep=0.5cm]{geometry}
 	\RequirePackage[utf8]{inputenc}
 	\RequirePackage{graphicx, caption}
 	\RequirePackage{float}
@@ -52,15 +52,15 @@
 
 		\fancyfoot{} % clear all footer fields
 		\renewcommand{\footrule}{\hrulefill}
-		\fancyfoot[R]{\thepage}
+		\fancyfoot[R]{\textbf{\thepage}}
 	}
 	\pagestyle{default}
 
 	% Show footnotes in footer
 	\renewcommand{\footnoterule}{
-		\kern -3pt
+		\kern 0pt
 		\hrule width \textwidth
-		\kern 5pt
+		\kern 2pt
 	}
 	\fancypagestyle{footnote} {
 		\renewcommand{\footrule}{}
