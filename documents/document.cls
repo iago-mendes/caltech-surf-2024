@@ -75,7 +75,7 @@
 	\titleformat
 		{\section} % command
 		{\bf\large} % shape
-		{} % label
+		{\Roman{section}. } % label
 		{0cm} % separation
 		{} % before code
 		[] % after code
