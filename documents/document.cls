@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{letter}[Letter]
+\ProvidesClass{document}[Document]
 \LoadClass[a4paper, 12pt]{article}
 
 % LIBRARIES
