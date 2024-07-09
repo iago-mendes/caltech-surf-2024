@@ -6,3 +6,7 @@
 *.blg
 *.bcf
 *.run.xml
+
+# Plot files
+*.tar
+plots/**/*.pdf
