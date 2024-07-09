@@ -9,8 +9,38 @@
 		{Control of Black Hole Parameters for Binary Evolutions}
 
 	\section{Introduction}
+
+  In the early twentieth century, Einstein revolutionized the study of gravity by connecting spacetime geometry with physical dynamics. As John Wheeler says, ``Spacetime tells matter how to move; matter tells spacetime how to curve'' \cite{Wheeler}. Being a highly complex theory, many problems of interest only have analytic solutions in special cases with symmetry. In this context, Numerical Relativity emerged as an essential field to solve these problems numerically, allowing us to explore general cases that can be found in the universe. Specifically, simulations of Binary Black Holes (BBH) became very important as gravitational wave detectors were developed, needing to use numerical results to identify and characterize signals in their data \cite{LIGO}.
+
+	Famously, the Einstein equations relate the curvature of spacetime to the stress-energy of matter, forming a system of ten nonlinear partial differential equations (PDEs). With the 3+1 formalism, we can rearrange these equations so that spacetime is described by spacelike three-dimensional slices of constant time \cite{Alcubierre}. In doing so, we find that four out of the ten equations do not involve time derivatives, implying that they are constraints that must be satisfied at all times. The remaining six equations describe an evolution of the constraint-satisfying fields. Using this formalism, the Spectral Einstein Code (SpEC) \cite{SpEC} runs BBH simulations by first finding initial data and then running an evolution on them. Over time, as SpEC faced more challenging BBH with high mass ratios and spins, several improvements had to be made to the initial data techniques, which are summarized in \cite{Serguei}.
+	
+	Despite its success in BBH simulations, SpEC shows its limitations in more challenging problems, such as binary neutron star mergers and BBH with extreme configurations. In this context, SpECTRE \cite{SpECTRE} was created as a codebase that follows a better parallelism model and aims to be more scalable \cite{Kidder}. Previous work has already shown that SpECTRE can be faster and more accurate than SpEC when performing similar tasks due to its use of parallelism \cite{Vu}. This will be especially needed for the upcoming gravitational wave detectors with higher sensitivity, such as the Cosmic Explorer, the Einstein Telescope and LISA.
+	
+	As part of an effort to allow researchers to fully simulate BBH in SpECTRE, an initial data procedure similar to the one in SpEC needs to be completed. This is greatly benefitted by a scalable elliptic solver that was recently developed \cite{Vu}, which can now be used to solve the initial data equations. Be that as it may, before the start of the SURF program, SpECTRE did not have a way to enforce specific masses and spins for the black holes or to avoid drifts in the orbital trajectory. As described in the next section, this is the problem that this research project aims to address.
   
-  \section{Theoretical Background}
+  \section{Numerical Method}
+
+  To find initial data, SpEC uses the extended conformal thin-sandwich (XCTS) decomposition \cite{Serguei}, which transforms the constraint PDEs into a system of five elliptic PDEs. Before solving the XCTS equations, we need to specify the conformal spatial metric $\bar\gamma_{ij}$, the extrinsic curvature trace $K$, and their respective time derivatives $\partial_t \bar\gamma_{ij}$ and $\partial_t K$ \cite{BaumgarteShapiro}. There are many methods for specifying these quantities, but the one that has shown to be the most promising for BBH simulations is the superposed Kerr-Schild (SKS) approach \cite{Lovelace2008}. It enforces quasiequilibrium conditions by setting $\partial_t \bar\gamma_{ij}=0$ and $\partial_t K=0$. Additionally, as the name suggests, it specifies $\bar\gamma_{ij}$ and $K$ by superposing two analytic solutions of Kerr-Schild black holes with masses $M^\text{Kerr}_{A,B}$ and dimensionless spins $\vec\chi^\text{Kerr}_{A,B}$, where $A$ and $B$ are used to distinguish between the two black holes.
+
+  When constructing the SKS analytical expressions for $\bar\gamma_{ij}$ and $K$, we also need to choose the centers of the black holes $\vec c_{A,B}$. When setting up a simulation, it is more convenient to specify their relative distance $\vec D=\vec c_A - \vec c_B$. Because of this, for any choice of $\vec c_A$, we have $\vec c_B = \vec c_A + \vec D$. In other words, we only have to choose $\vec c_A$.
+
+  Having $\bar\gamma_{ij}$, $K$, $\partial_t \bar\gamma_{ij}$ and $\partial_t K$ specified, we can use the elliptic solver on the XCTS equations, three of which will be solved for the shift $\beta^i$. Similar to any elliptic PDE problem, we have to set boundary conditions before solving these equations. In the boundary conditions of $\vec\beta$, we can add a constant velocity $\vec v_0$, giving us more control over the initial kinematics of the binary system.
+
+  Once the XCTS equations are solved, we have all the information that we need about the zero-time slice of spacetime. With this, we can use an apparent horizon finder to get measurements of the black holes in the constructed initial data. ...
+
+  $M_{A,B}$
+
+  $\vec\chi_{A,B}$
+
+  $\vec P_\text{ADM}$
+
+  $\vec C_\text{CoM}$
+
+  The momentum constraint constitutes three of these equations and 
+  
+  Similar to any elliptic PDE problem, this system requires boundary conditions. Hence, SpEC has to choose \textit{free} data and impose them at the boundary before the elliptic solver can be used on the XCTS equations. From the resulting fields, one can measure \textit{physical} parameters of the simulation, such as the black holes masses and spins, the total linear momentum and the center of mass. Even though we wish to control these physical quantities, it is not possible to measure them before the elliptic solve. Therefore, SpEC has to iterate over different choices of free data, trying to find the ones that result in the desired physical parameters.
+
+  To enforce quasi-equilibrium conditions, 
 
 	\section{Progress Update}
 

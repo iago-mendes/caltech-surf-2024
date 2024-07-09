@@ -4,3 +4,5 @@ SpECTRE
 PDEs
 spacelike
 PDE
+quasiequilibrium
+Kerr-Schild
