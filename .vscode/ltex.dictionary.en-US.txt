@@ -7,3 +7,5 @@ PDE
 quasiequilibrium
 Kerr-Schild
 Newton-Raphson
+pointwise
+integrands

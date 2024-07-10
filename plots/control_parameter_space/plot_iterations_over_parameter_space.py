@@ -107,7 +107,7 @@ ax.scatter(points_fail_q, points_fail_chi, color='red', s=300, marker='x')
 for i, num_of_iterations in enumerate(points_success_num_of_iterations):
   ax.annotate(f'{num_of_iterations:.0f}',
                (points_success_q[i], points_success_chi[i]),
-               (points_success_q[i]-0.03, points_success_chi[i]-0.01),
+               (points_success_q[i]-0.03, points_success_chi[i]-0.02),
   )
 
 
@@ -115,13 +115,13 @@ for i, num_of_iterations in enumerate(points_success_num_of_iterations):
 ax.set_xlabel(r'Mass ratio $q^*=M^*_A/M^*_B$')
 ax.set_ylabel(r'Dimensionless spin $\chi^* = \chi^{*z}_A = \chi^{*z}_B$')
 
-ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.09))
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15))
 ax.grid('on', linestyle='--', alpha=0.3)
 ax.set_xticks(q_values)
 ax.set_yticks(chi_values)
 
 plt.tight_layout()
-fig.set_size_inches(10, 8)
+fig.set_size_inches(10, 5)
 fig.savefig(f'control_iterations_over_parameter_space.pdf', format='pdf', bbox_inches='tight')
 
 plt.show()

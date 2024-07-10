@@ -5,7 +5,8 @@
 % LIBRARIES
 	\RequirePackage[top=2cm, bottom=2.5cm, left=2cm, right=2cm, footskip=1cm, headsep=0.5cm]{geometry}
 	\RequirePackage[utf8]{inputenc}
-	\RequirePackage{graphicx, caption}
+	\RequirePackage{graphicx}
+	\RequirePackage[labelfont=bf, width=.8\textwidth]{caption}
 	\RequirePackage{float}
 	\RequirePackage{amsmath, amsfonts, amssymb, esint, amsthm, dsfont}
 	\RequirePackage{titlesec}
