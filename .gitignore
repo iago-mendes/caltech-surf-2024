@@ -9,4 +9,6 @@
 
 # Plot files
 *.tar
-plots/**/*.pdf
+*.h5
+*.output
+*.txt

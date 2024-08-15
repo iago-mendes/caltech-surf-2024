@@ -9,3 +9,6 @@ Kerr-Schild
 Newton-Raphson
 pointwise
 integrands
+Christoffel
+Arnowitt-Deser-Misner
+Schwarzschild

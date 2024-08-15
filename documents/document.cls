@@ -26,7 +26,10 @@
 	\RequirePackage{etoolbox}
 
 
-% COLORS
+% SETUP
+  % allow large figures in pages
+	\renewcommand{\floatpagefraction}{.7}
+
 	\definecolor{red}{rgb}{1,0,0}
 	\definecolor{green}{rgb}{0,1,0}
 	\definecolor{blue}{rgb}{0,0,1}
