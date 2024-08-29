@@ -24,7 +24,6 @@ if len(entries.shape) < 2:
 	print('ERROR: not enough iterations to plot.')
 	exit()
 
-
 iterations = np.array(entries[:,0])
 residual_M_A = np.abs(np.array(entries[:,1 if len(entries[0]) == 15 else 9]))
 residual_M_B = np.abs(np.array(entries[:,2 if len(entries[0]) == 15 else 10]))
@@ -46,34 +45,28 @@ residual_chi_B = np.sqrt(residual_chi_B_x**2 + residual_chi_B_y**2 + residual_ch
 residual_CoM = np.sqrt(residual_CoM_x**2 + residual_CoM_y**2 + residual_CoM_z**2)
 residual_Padm = np.sqrt(residual_Padm_x**2 + residual_Padm_y**2 + residual_Padm_z**2)
 
-fig, (ax1, ax2, ax3) = plt.subplots(3, 1, squeeze=True)
+plot_counter = 0
+def plot(data1, data2, label1, label2):
+  global plot_counter
+  fig, ax = plt.subplots(1, 1, squeeze=True)
+  ax.plot(iterations, data1, label=label1, color=colors[plot_counter], marker=markers[plot_counter])
+  ax.plot(iterations, data2, label=label2, color=colors[plot_counter+1], marker=markers[plot_counter+1])
+  plot_counter += 2
+  
+  ax.set_xlabel('Control iteration')
 
-
-markers = ['o', '^', 'v', 's', 'D', 'P', 'p', '*', 'h', 'H', '+']
-marker_counter = 0
-def plot(ax, data, label):
-	global marker_counter
-	ax.plot(iterations, data, label=label)
-	marker_counter += 1
-
-plot(ax1, np.abs(residual_M_A), label=r'$|M_A - M^*_A|$')
-plot(ax1, np.abs(residual_M_B), label=r'$|M_B - M^*_B|$')
-plot(ax2, residual_chi_A, label=r'$|\chi_A - \chi^*_A|$')
-plot(ax2, residual_chi_B, label=r'$|\chi_B - \chi^*_B|$')
-plot(ax3, residual_CoM, label=r'$|C_{CoM}|$')
-plot(ax3, residual_Padm, label=r'$|P_{ADM}|$')
-
-for ax in [ax1, ax2, ax3]:
   ax.legend()
   ax.set_yscale('log')
   ax.xaxis.set_major_locator(MaxNLocator(integer=True))
   ax.grid('on', linestyle='--', alpha=0.3)
 
-ax3.set_xlabel('Control iteration')
+  fig.set_size_inches(7, 4)
+  plt.tight_layout()
+  fig.savefig(f'{dir}-residuals{plot_counter//2}.pdf', format='pdf', bbox_inches='tight')
 
-fig.set_size_inches(5, 8)
-plt.tight_layout()
-plt.subplots_adjust(hspace=0.04)
-fig.savefig(f'{dir}-residuals.pdf', format='pdf', bbox_inches='tight')
+  plt.show()
 
-plt.show()
+
+plot(np.abs(residual_M_A), np.abs(residual_M_B), r'$|M_A - M^*_A|$', r'$|M_B - M^*_B|$')
+plot(residual_chi_A, residual_chi_B, r'$|\chi_A - \chi^*_A|$', r'$|\chi_B - \chi^*_B|$')
+plot(residual_CoM, residual_Padm, r'$|C_{CoM}|$', r'$|P_{ADM}|$')

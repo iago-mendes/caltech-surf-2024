@@ -36,23 +36,24 @@ for i in range(2):
   entries = np.genfromtxt(fname, delimiter=',')
 
   iterations = np.array(entries[:,0])
-  residual_M_A = np.abs(np.array(entries[:,1]))
-  residual_M_B = np.abs(np.array(entries[:,2]))
-  residual_chi_A_x = np.array(entries[:,3])
-  residual_chi_A_y = np.array(entries[:,4])
-  residual_chi_A_z = np.array(entries[:,5])
+  residual_M_A = np.abs(np.array(entries[:,1 if len(entries[0]) == 15 else 9]))
+  residual_M_B = np.abs(np.array(entries[:,2 if len(entries[0]) == 15 else 10]))
+  residual_chi_A_x = np.array(entries[:,3 if len(entries[0]) == 15 else 11])
+  residual_chi_A_y = np.array(entries[:,4 if len(entries[0]) == 15 else 12])
+  residual_chi_A_z = np.array(entries[:,5 if len(entries[0]) == 15 else 13])
+  residual_chi_B_x = np.array(entries[:,6 if len(entries[0]) == 15 else 14])
+  residual_chi_B_y = np.array(entries[:,7 if len(entries[0]) == 15 else 15])
+  residual_chi_B_z = np.array(entries[:,8 if len(entries[0]) == 15 else 16])
+  residual_CoM_x = np.array(entries[:,9 if len(entries[0]) == 15 else 17])
+  residual_CoM_y = np.array(entries[:,10 if len(entries[0]) == 15 else 18])
+  residual_CoM_z = np.array(entries[:,11 if len(entries[0]) == 15 else 19])
+  residual_Padm_x = np.array(entries[:,12 if len(entries[0]) == 15 else 20])
+  residual_Padm_y = np.array(entries[:,13 if len(entries[0]) == 15 else 21])
+  residual_Padm_z = np.array(entries[:,14 if len(entries[0]) == 15 else 22])
+  
   residual_chi_A = np.sqrt(residual_chi_A_x**2 + residual_chi_A_y**2 + residual_chi_A_z**2)
-  residual_chi_B_x = np.array(entries[:,6])
-  residual_chi_B_y = np.array(entries[:,7])
-  residual_chi_B_z = np.array(entries[:,8])
   residual_chi_B = np.sqrt(residual_chi_B_x**2 + residual_chi_B_y**2 + residual_chi_B_z**2)
-  residual_CoM_x = np.array(entries[:,9])
-  residual_CoM_y = np.array(entries[:,10])
-  residual_CoM_z = np.array(entries[:,11])
   residual_CoM = np.sqrt(residual_CoM_x**2 + residual_CoM_y**2 + residual_CoM_z**2)
-  residual_Padm_x = np.array(entries[:,12])
-  residual_Padm_y = np.array(entries[:,13])
-  residual_Padm_z = np.array(entries[:,14])
   residual_Padm = np.sqrt(residual_Padm_x**2 + residual_Padm_y**2 + residual_Padm_z**2)
 
   ax1.plot(iterations, residual_M_A, label=r'$|M_A - M^*_A|$', color=colors[0], marker=markers[0])
@@ -80,8 +81,13 @@ for i, row in enumerate(np.transpose(axes)):
   for ax in row:
     ax.set_ylim(data_min[i]/2., data_max[i]*2.)
 
-for ax in axes[1:].flatten():
+# Remove y tick labels
+for ax in axes[1:,:].flatten():
   ax.set_yticklabels([])
+
+# Remove x tick labels
+for ax in axes[:,:-1].flatten():
+  ax.set_xticklabels([])
 
 for right_ax in axes[-1]:
   right_ax.legend(loc='center left', bbox_to_anchor=(0.99, 0.5))
