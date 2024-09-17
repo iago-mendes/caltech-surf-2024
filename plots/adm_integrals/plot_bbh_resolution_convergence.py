@@ -39,9 +39,6 @@ for i in range(2):
   dir = dirs[i]
   ax1, ax2, ax3 = axes[i]
 
-  # List of directories
-  directories = ["L0P02", "L0P03", "L1P09", "L1P10", "L2P05"]
-
   # Initialize a dictionary to store L and respective P values
   L_P_dict = {}
 
