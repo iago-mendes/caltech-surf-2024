@@ -12,3 +12,4 @@ integrands
 Christoffel
 Arnowitt-Deser-Misner
 Schwarzschild
+quasi-Newton-Raphson
