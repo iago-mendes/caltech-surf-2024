@@ -1,6 +1,6 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{document}[Document]
-\LoadClass[a4paper, 12pt]{article}
+\LoadClass[12pt]{article}
 
 % LIBRARIES
 	\RequirePackage[top=2cm, bottom=2.5cm, left=2cm, right=2cm, footskip=1cm, headsep=0.5cm]{geometry}
@@ -24,6 +24,8 @@
 	\RequirePackage[sorting=none]{biblatex}
 	\RequirePackage[bottom, symbol]{footmisc}
 	\RequirePackage{etoolbox}
+	\RequirePackage{orcidlink}
+	\RequirePackage{indentfirst}
 
 
 % SETUP
@@ -79,7 +81,15 @@
 	\titleformat
 		{\section} % command
 		{\bf\large} % shape
-		{\Roman{section}. } % label
+		{\thesection. } % label
+		{0cm} % separation
+		{} % before code
+		[] % after code
+
+	\titleformat
+		{\subsection} % command
+		{\it\large} % shape
+		{\thesubsection. } % label
 		{0cm} % separation
 		{} % before code
 		[] % after code
