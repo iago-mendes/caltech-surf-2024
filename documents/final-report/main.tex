@@ -113,8 +113,92 @@
     \end{figure}
 
   \section{Methods}
-  
+
     \subsection{Calculation of asymptotic quantities}
+
+      In the ADM formalism, we can measure the total energy of a system by computing the ADM mass $M_\text{ADM}$. In terms of conformal quantities, it takes the form of
+      \begin{equation} \label{eq:Madm-surf}
+        M_\text{ADM}
+        = \frac{1}{16\pi} \oint_{S_\infty}  \Big(
+          \bar\gamma^{jk} \bar\Gamma^i_{jk}
+          - \bar\gamma^{ij} \bar\Gamma_{j}
+          - 8 \bar D^i \psi
+          \Big) \, d\bar{S}_i
+      \end{equation}
+      \cite[\eq{3.139}]{BaumgarteShapiro}, where $\bar\Gamma^i_{jk}$ are the Christoffel symbols associated with $\bar\gamma_{ij}$ (see \eq{2.44} in \cite{BaumgarteShapiro} for a definition) and $\bar\Gamma_{j} = \bar\Gamma^{i}_{ij}$. Applying Gauss' law to \eq{\eqref{eq:Madm-surf}}, we have
+      \begin{align}
+        M_\text{ADM}
+        &= \frac{1}{16\pi}
+            \int_{V_\infty} \bar D_i  \Big(
+              \bar\gamma^{jk} \bar\Gamma^i_{jk}
+              - \bar\gamma^{ij} \bar\Gamma_{j}
+              - 8 \bar D^i \psi
+            \Big) \, d\bar{V} \\
+        &= \frac{1}{16\pi}
+            \int_{V_\infty} \Big(
+              \partial_i \bar\gamma^{jk} \bar\Gamma^i_{jk}
+              + \bar\gamma^{jk} \partial_i \bar\Gamma^i_{jk}
+              + \bar\Gamma_l \bar\gamma^{jk} \bar\Gamma^l_{jk}
+              - \partial_i \bar\gamma^{ij} \bar\Gamma_j
+              - \bar\gamma^{ij} \partial_i \bar\Gamma_j
+              - \bar\Gamma_l \bar\gamma^{lj} \bar\Gamma_j
+              - 8 \bar D^2 \psi
+            \Big) d\bar{V},
+      \end{align}
+      where we can use the Hamiltonian constraint to replace $8 \bar D^2 \psi$ with
+      \begin{equation}
+        8 \bar D^2 \psi = \psi \bar R + \frac{2}{3} \psi^5 K^2
+                          - \frac{1}{4} \psi^5 \frac{1}{\alpha^2}
+                              \Big[ (\bar L \beta)_{ij} - \bar u_{ij} \Big]
+                              \Big[ (\bar L \beta)^{ij} - \bar u^{ij} \Big]
+                          - 16\pi \psi^5 \rho
+      \end{equation}
+      \cite[\eq{3.37}]{BaumgarteShapiro}.
+
+      Similarly, we can measure the total linear momentum of a system with the ADM linear momentum $P_\text{ADM}^i$ using the expressions derived in \cite[\eqs{18--22}]{Serguei}. As an infinite surface integral, it is expressed as
+      \begin{equation} \label{eq:Padm-surf}
+        P_\text{ADM}^i = \frac{1}{8\pi}
+                          \oint_{S_\infty} \psi^{10} \Big(
+                            K^{ij} - K \gamma^{ij}
+                           \Big) \, dS_j.
+      \end{equation}
+      Applying Gauss' law and using the momentum constraint, it becomes
+      \begin{align}
+        P_\text{ADM}^i
+        &= \frac{1}{8\pi}
+            \oint_{S_\infty} \partial_j \Big[ \psi^{10} \Big(
+              K^{ij} - K \gamma^{ij}
+            \Big) \Big] \, dV \\
+        &= - \frac{1}{8\pi}
+              \int_{V_\infty} \Big[
+                \bar\Gamma^i_{jk} P^{jk}
+                + \bar\Gamma^j_{jk} P^{jk}
+                - 2 \bar\gamma_{jk} P^{jk} \bar\gamma^{il}
+                                           \partial_l(\ln\psi)
+              \Big] \, dV, \label{eq:Padm-vol}
+      \end{align}
+      where $P^{ij} = \psi^{10} (K^{ij} - K \gamma^{ij})$ is the integrand of \eq{\eqref{eq:Padm-surf}}. Note that the matter sources are ignored when using the momentum constraint in \cite{BaumgarteShapiro}, but it is straightforward to add the source term to \eq{\eqref{eq:Padm-vol}} is needed in the future.
+
+      Finally, using the formalism developed in \cite{Baskaran_2003}, we can find the center of mass of a system by evaluating the integral
+      \begin{equation} \label{eq:CoM-surf}
+        C_\text{CoM}^i = \frac{3}{8 \pi M_\text{ADM}}
+                         \oint_{S_\infty} \psi^4 n^i \, dA
+      \end{equation}
+      \cite[\eq{26}]{Serguei}, where $n^i = x^i / r$ and $r = \sqrt{x^2 + y^2 + z^2}$. Applying Gauss' law to \eq{\eqref{eq:CoM-surf}}, we have
+      \begin{align}
+        C_\text{CoM}^i
+        &= \frac{3}{8 \pi M_\text{ADM}}
+            \oint_{S_\infty} \partial_j \Big( \psi^4 n^i n^j \Big) \, dV \\
+        &= \frac{3}{4 \pi M_\text{ADM}}
+            \int_{V_\infty} \frac{1}{r^2} \Big(
+              2 \psi^3 \partial_j \psi x^i x^j
+              + \psi^4 x^i
+            \Big) dV.
+      \end{align}
+
+      \todo{Make a remark about conformal vs euclidean area/volume elements}
+
+      \todo{Mention that these integrals are computed in a reduction}
 
     \subsection{Control loop}
   

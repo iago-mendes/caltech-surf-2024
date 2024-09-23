@@ -13,3 +13,5 @@ Christoffel
 Arnowitt-Deser-Misner
 Schwarzschild
 quasi-Newton-Raphson
+Eq
+integrand
