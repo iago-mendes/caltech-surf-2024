@@ -156,6 +156,9 @@ axes[0,1].plot([1.e2, 1.e8], [1.e-15, 1.e-15], alpha=0)
 axes[0,1].set_yscale('symlog', linthresh=1e-17)
 # Kerr-Schild Padm
 axes[1,1].set_ylim(1.2e-18, 1.5e-15)
+# Boosted Isotropic Padm
+axes[2,1].set_ylim(2.e-7, 2.e+1)
+axes[2,1].set_yticks([1.e+1, 1.e-1, 1.e-3, 1.e-5])
 # BBH Madm
 axes[4,0].set_yscale('symlog', linthresh=1e-18)
 axes[4,0].set_yticks([1.e-4, 1.e-8, 1.e-12, 1.e-16, 0])
