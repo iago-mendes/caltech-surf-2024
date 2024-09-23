@@ -116,7 +116,9 @@
 
     \subsection{Calculation of asymptotic quantities}
 
-      In the ADM formalism, we can measure the total energy of a system by computing the ADM mass $M_\text{ADM}$. In terms of conformal quantities, it takes the form of
+      In Newtonian mechanics, it is typically straightforward to compute the center of mass and the linear momentum of a system. However, in general relativity, these are asymptotic quantities -- defined by infinite surface integrals. Since the computational domains are coarser at their outer boundaries, these integrals tend to be very sensitivity to small errors, leading to less accurate results. To overcome this, we can cast these calculations as volume integrals using Gauss' theorem. Below, we explain the approaches we used to compute these asymptotic quantities in {\tt SpECTRE}.
+
+      We can measure the total energy of a system by computing the ADM mass $M_\text{ADM}$. In terms of conformal quantities, it takes the form of
       \begin{equation} \label{eq:Madm-surf}
         M_\text{ADM}
         = \frac{1}{16\pi} \oint_{S_\infty}  \Big(
@@ -125,7 +127,7 @@
           - 8 \bar D^i \psi
           \Big) \, d\bar{S}_i
       \end{equation}
-      \cite[\eq{3.139}]{BaumgarteShapiro}, where $\bar\Gamma^i_{jk}$ are the Christoffel symbols associated with $\bar\gamma_{ij}$ (see \eq{2.44} in \cite{BaumgarteShapiro} for a definition) and $\bar\Gamma_{j} = \bar\Gamma^{i}_{ij}$. Applying Gauss' law to \eq{\eqref{eq:Madm-surf}}, we have
+      \cite[\eq{3.139}]{BaumgarteShapiro}, where $\bar\Gamma^i_{jk}$ are the Christoffel symbols associated with $\bar\gamma_{ij}$ (see \eq{2.44} in \cite{BaumgarteShapiro} for a definition) and $\bar\Gamma_{j} = \bar\Gamma^{i}_{ij}$. Applying Gauss' theorem to \eq{\eqref{eq:Madm-surf}}, we have
       \begin{align}
         M_\text{ADM}
         &= \frac{1}{16\pi}
@@ -133,17 +135,18 @@
               \bar\gamma^{jk} \bar\Gamma^i_{jk}
               - \bar\gamma^{ij} \bar\Gamma_{j}
               - 8 \bar D^i \psi
-            \Big) \, d\bar{V} \\
+            \Big) \, d\bar{V} \label{eq:Madm-Gauss} \\
         &= \frac{1}{16\pi}
             \int_{V_\infty} \Big(
               \partial_i \bar\gamma^{jk} \bar\Gamma^i_{jk}
               + \bar\gamma^{jk} \partial_i \bar\Gamma^i_{jk}
               + \bar\Gamma_l \bar\gamma^{jk} \bar\Gamma^l_{jk}
+              \\ &\qquad\qquad\qquad \notag
               - \partial_i \bar\gamma^{ij} \bar\Gamma_j
               - \bar\gamma^{ij} \partial_i \bar\Gamma_j
               - \bar\Gamma_l \bar\gamma^{lj} \bar\Gamma_j
               - 8 \bar D^2 \psi
-            \Big) d\bar{V},
+            \Big) d\bar{V}, \label{eq:Madm-vol}
       \end{align}
       where we can use the Hamiltonian constraint to replace $8 \bar D^2 \psi$ with
       \begin{equation}
@@ -155,20 +158,37 @@
       \end{equation}
       \cite[\eq{3.37}]{BaumgarteShapiro}.
 
-      Similarly, we can measure the total linear momentum of a system with the ADM linear momentum $P_\text{ADM}^i$ using the expressions derived in \cite[\eqs{18--22}]{Serguei}. As an infinite surface integral, it is expressed as
+      Using the formalism developed in \cite{Baskaran_2003}, we can find the center of mass of a system by evaluating the integral
+      \begin{equation} \label{eq:CoM-surf}
+        C_\text{CoM}^i = \frac{3}{8 \pi M_\text{ADM}}
+                         \oint_{S_\infty} \psi^4 n^i \, dA
+      \end{equation}
+      \cite[\eq{26}]{Serguei}, where $n^i = x^i / r$ and $r = \sqrt{x^2 + y^2 + z^2}$. Applying Gauss' theorem to \eq{\eqref{eq:CoM-surf}}, we have
+      \begin{align}
+        C_\text{CoM}^i
+        &= \frac{3}{8 \pi M_\text{ADM}}
+            \oint_{S_\infty} \partial_j \Big( \psi^4 n^i n^j \Big) \, dV \label{eq:CoM-Gauss} \\
+        &= \frac{3}{4 \pi M_\text{ADM}}
+            \int_{V_\infty} \frac{1}{r^2} \Big(
+              2 \psi^3 \partial_j \psi x^i x^j
+              + \psi^4 x^i
+            \Big) dV. \label{eq:CoM-vol}
+      \end{align}
+
+      We can also measure the total linear momentum of a system with the ADM linear momentum $P_\text{ADM}^i$ using the expressions derived in \cite[\eqs{18--22}]{Serguei}. As an infinite surface integral, it is expressed as
       \begin{equation} \label{eq:Padm-surf}
         P_\text{ADM}^i = \frac{1}{8\pi}
                           \oint_{S_\infty} \psi^{10} \Big(
                             K^{ij} - K \gamma^{ij}
                            \Big) \, dS_j.
       \end{equation}
-      Applying Gauss' law and using the momentum constraint, it becomes
+      Applying Gauss' theorem and using the momentum constraint, it becomes
       \begin{align}
         P_\text{ADM}^i
         &= \frac{1}{8\pi}
             \oint_{S_\infty} \partial_j \Big[ \psi^{10} \Big(
               K^{ij} - K \gamma^{ij}
-            \Big) \Big] \, dV \\
+            \Big) \Big] \, dV \label{eq:Padm-Gauss} \\
         &= - \frac{1}{8\pi}
               \int_{V_\infty} \Big[
                 \bar\Gamma^i_{jk} P^{jk}
@@ -179,29 +199,180 @@
       \end{align}
       where $P^{ij} = \psi^{10} (K^{ij} - K \gamma^{ij})$ is the integrand of \eq{\eqref{eq:Padm-surf}}. Note that the matter sources are ignored when using the momentum constraint in \cite{BaumgarteShapiro}, but it is straightforward to add the source term to \eq{\eqref{eq:Padm-vol}} is needed in the future.
 
-      Finally, using the formalism developed in \cite{Baskaran_2003}, we can find the center of mass of a system by evaluating the integral
-      \begin{equation} \label{eq:CoM-surf}
-        C_\text{CoM}^i = \frac{3}{8 \pi M_\text{ADM}}
-                         \oint_{S_\infty} \psi^4 n^i \, dA
+      An attentive reader might have noticed that we have used Gauss' theorem in two different ways. That is, we used the conformal covariant derivative $\bar D_i$ and the conformal volume element $d\bar{V}$ in \eq{\eqref{eq:Madm-Gauss}}, but the partial derivative $\partial_i$ and the Euclidean volume element $dV$ in \eq{\eqref{eq:CoM-Gauss}} and \eq{\eqref{eq:Padm-Gauss}}. Both approaches are equivalent \cite{DeBenedictis_1998, Teukolsky_2016}, as long as we are consistent.
+      
+      In practice, we cannot {\tt SpECTRE} cannot evaluate volume integrals over all space because the interior of the black holes are excised from the domain. Hence, if we wish to use the infinite volume integrals, we must still perform finite surface integrals enclosing the excisions. For practicality, we choose to do such integrals over the excisions themselves. If we let $S_0$ be the combination of the excision surfaces, the resulting computations become
+      \begin{equation}
+        \begin{aligned}
+        M_\text{ADM}
+        &= \frac{1}{16\pi} \oint_{S_0}  \Big(
+            \bar\gamma^{jk} \bar\Gamma^i_{jk}
+            - \bar\gamma^{ij} \bar\Gamma_{j}
+            - 8 \bar D^i \psi
+            \Big) \, d\bar{S}_i
+            \\ &\quad
+            + \frac{1}{16\pi}
+            \int_{V_\infty} \Big(
+              \partial_i \bar\gamma^{jk} \bar\Gamma^i_{jk}
+              + \bar\gamma^{jk} \partial_i \bar\Gamma^i_{jk}
+              + \bar\Gamma_l \bar\gamma^{jk} \bar\Gamma^l_{jk}
+              \\ &\qquad\qquad\qquad\quad
+              - \partial_i \bar\gamma^{ij} \bar\Gamma_j
+              - \bar\gamma^{ij} \partial_i \bar\Gamma_j
+              - \bar\Gamma_l \bar\gamma^{lj} \bar\Gamma_j
+              - 8 \bar D^2 \psi
+            \Big) d\bar{V},
+        \end{aligned}
       \end{equation}
-      \cite[\eq{26}]{Serguei}, where $n^i = x^i / r$ and $r = \sqrt{x^2 + y^2 + z^2}$. Applying Gauss' law to \eq{\eqref{eq:CoM-surf}}, we have
-      \begin{align}
-        C_\text{CoM}^i
-        &= \frac{3}{8 \pi M_\text{ADM}}
-            \oint_{S_\infty} \partial_j \Big( \psi^4 n^i n^j \Big) \, dV \\
-        &= \frac{3}{4 \pi M_\text{ADM}}
-            \int_{V_\infty} \frac{1}{r^2} \Big(
-              2 \psi^3 \partial_j \psi x^i x^j
-              + \psi^4 x^i
-            \Big) dV.
-      \end{align}
+      \begin{equation}
+        \begin{aligned}
+          C_\text{CoM}^i
+          &= \frac{3}{8 \pi M_\text{ADM}}
+              \oint_{S_0} \psi^4 n^i \, dA
+              \\ &\quad
+            +\frac{3}{4 \pi M_\text{ADM}}
+              \int_{V_\infty} \frac{1}{r^2} \Big(
+                2 \psi^3 \partial_j \psi x^i x^j
+                + \psi^4 x^i
+              \Big) dV,
+        \end{aligned}
+      \end{equation}
+      \begin{equation}
+        \begin{aligned}
+          P_\text{ADM}^i
+          &= \frac{1}{8\pi}
+              \oint_{S_0} \psi^{10} \Big(
+                K^{ij} - K \gamma^{ij}
+              \Big) \, dS_j \\
+            &\quad - \frac{1}{8\pi}
+              \int_{V_\infty} \Big[
+                \bar\Gamma^i_{jk} P^{jk}
+                + \bar\Gamma^j_{jk} P^{jk}
+                - 2 \bar\gamma_{jk} P^{jk} \bar\gamma^{il}
+                                          \partial_l(\ln\psi)
+              \Big] \, dV.
+        \end{aligned}
+      \end{equation}
 
-      \todo{Make a remark about conformal vs euclidean area/volume elements}
-
-      \todo{Mention that these integrals are computed in a reduction}
+      Because of {\tt SpECTRE}'s task-based parallelism, we must first evaluate the integrals locally in each domain element. Then, we perform a reduction to combine the results from all elements into a single result for the entire domain.
 
     \subsection{Control loop}
-  
+      
+      Once the XCTS equations are solved, we have all the information that we need about the zero-time slice of spacetime. With this, we can use an apparent horizon finder to get measurements of the black holes in the constructed initial data. Let $M_A$, $M_B$, $\vec\chi_{A}$ and $\vec\chi_{B}$ be the masses and spins of the actual black holes that we have been able to create. In general, these values will differ from the ``target'' quantities $M^*_A$, $M^*_B$, $\vec\chi^*_{A}$ and $\vec\chi^*_{B}$. For example, suppose that we wish to simulate an equal-mass non-spinning case with $M^*_A = M^*_B = 0.5$ and $\vec\chi^*_{A} = \vec\chi^*_{B} = (0,0,0)$. In order to construct the SKS analytical expressions, it is natural to specify $M^\text{Kerr}_{A,B} = M^*_{A,B}$ and $\vec\chi^\text{Kerr}_{A,B} = \vec\chi^*_{A,B}$. With this, we can solve the XCTS equations and find horizons in the resulting initial data. Once we do it in {\tt SpECTRE}, we find that the resulting black hole parameters are actually $M_{A,B} \approx 0.6$ and $\vec\chi_{A,B} \approx (0,0,-0.002)$.
+
+      If we measure the asymptotic quantities described in the previous subsection, we might find that they are also not desirable. Ideally, $\vec C_\text{CoM}$ and $\vec P_\text{ADM}$ should be equal to zero in order to minimize any drifts of the binary orbit, especially for long simulations. However, similar to the example above, we can only know these quantities after the initial data has been constructed.
+
+      Note that $M_{A,B}$, $\vec\chi_{A,B}$, $\vec C_\text{CoM}$ and $\vec P_\text{ADM}$ are the parameters that we wish to control, but we cannot directly set them to the desired values. We handle this issue is by iterating over different choices of the free data ($M^\text{Kerr}_{A,B}$, $\vec\chi^\text{Kerr}_{A,B}$, $\vec C_0$ and $\vec v_0$), trying to find the ones that result in the ideal physical parameters. Figure \ref{fig:control-loop} shows a schematic representation of this ``control loop''.
+    
+      \begin{figure}
+        \centering
+        \begin{tikzpicture}
+          \node at (0,0) {\bf Initial Data};
+    
+          \draw (-2.5,-2) rectangle (2.5,2);
+    
+          \draw[->] (-4.5,1.3) -- (-2.3,1.3) node[anchor = south, pos = 0.5] {$M^\text{Kerr}_{A,B}$};
+          \draw[->] (-4.5,0.3) -- (-2.3,0.3) node[anchor = south, pos = 0.5] {$\vec\chi^\text{Kerr}_{A,B}$};
+          \draw[->] (-4.5,-0.7) -- (-2.3,-0.7) node[anchor = south, pos = 0.5] {$\vec C_0$};
+          \draw[->] (-4.5,-1.7) -- (-2.3,-1.7) node[anchor = south, pos = 0.5] {$\vec v_0$};
+    
+          \draw[->] (2.3,1.3) -- (4.5,1.3) node[anchor = south, pos = 0.5] {$M_{A,B}$};
+          \draw[->] (2.3,0.3) -- (4.5,0.3) node[anchor = south, pos = 0.5] {$\vec\chi_{A,B}$};
+          \draw[->] (2.3,-0.7) -- (4.5,-0.7) node[anchor = south, pos = 0.5] {$\vec C_\text{CoM}$};
+          \draw[->] (2.3,-1.7) -- (4.5,-1.7) node[anchor = south, pos = 0.5] {$\vec P_\text{ADM}$};
+    
+          \draw[->, very thick] (5,-1.25) to [out=-30,in=-150] (-5,-1.25);
+          \node at (0,-3.25) {if not $\big(M_{A,B}, \vec\chi_{A,B}, \vec C_\text{CoM}, \vec P_\text{ADM}\big) \approx \big(M^*_{A,B}, \vec\chi^*_{A,B}, 0, 0\big)$};
+        \end{tikzpicture}
+        \caption{Schematic representation of the control loop.}
+        \label{fig:control-loop}
+      \end{figure}
+    
+      Let the choices of the free data be represented as
+      \begin{equation}
+        \begin{aligned}
+          {\bf u}
+          = \Big(
+            M^\text{Kerr}_A,
+            M^\text{Kerr}_B,
+            \chi^{\text{Kerr},x}_A, \chi^{\text{Kerr},y}_A, \chi^{\text{Kerr},z}_A, \qquad\qquad\quad \\
+            \chi^{\text{Kerr},x}_B, \chi^{\text{Kerr},y}_B, \chi^{\text{Kerr},z}_B,
+            C_0^x, C_0^y, C_0^z,
+            v_0^x, v_0^y, v_0^z
+          \Big).
+        \end{aligned}
+      \end{equation}
+      Also, let the difference between the current and target physical parameters be represented as
+      \begin{equation}
+        \begin{aligned}
+          {\bf F}({\bf u})
+          = \Big(
+            M_A - M^*_A,
+            M_B - M^*_B,
+            \chi^x_A - \chi^{*,x}_A, \chi^y_A - \chi^{*,y}_A, \chi^z_A - \chi^{*,z}_A, \qquad\qquad\qquad\qquad\quad \\
+            \chi^x_B - \chi^{*,x}_B, \chi^y_B - \chi^{*,y}_B, \chi^z_B - \chi^{*,z}_B,
+            C_\text{CoM}^x, C_\text{CoM}^y, C_\text{CoM}^z,
+            P_\text{ADM}^x, P_\text{ADM}^y, P_\text{ADM}^z
+          \Big).
+        \end{aligned}
+      \end{equation}
+      As discussed in the example above, it is natural to use the target values as an initial guess for the free data:
+      \begin{equation}
+        \begin{aligned}
+          {\bf u}_0
+          = \Big(
+            M^*_A,
+            M^*_B,
+            \chi^{*,x}_A, \chi^{*,y}_A, \chi^{*,z}_A, \qquad\quad \\
+            \chi^{*,x}_B, \chi^{*,y}_B, \chi^{*,z}_B,
+            0, 0, 0,
+            0, 0, 0
+          \Big).
+        \end{aligned}
+      \end{equation}
+
+      With this, we can update our free data at every control iteration $k \geq 1$ using a Newton-Raphson scheme \cite{NumericalRecipes}:
+      \begin{equation}\label{eq:u-iteration}
+        {\bf u}_k = {\bf u}_{k-1} - \mathbb{J}^{-1}_{k-1} \cdot {\bf F}_{k-1}.
+      \end{equation}
+      Note however that each evaluation of ${\bf F}({\bf u})$ is computationally expensive as it requires an entire Initial Data solve. Therefore, computing the Jacobian in \eq{\eqref{eq:u-iteration}} analytically is unfeasible. That said, we can find it numerically using Broyden's method \cite{NumericalRecipes}:
+      \begin{equation}\label{eq:J-iteration}
+        \mathbb{J}_k = \mathbb{J}_{k-1} + \frac{{\bf F}_k \otimes \Delta {\bf u}_k}{||\Delta {\bf u}_k||^2},
+      \end{equation}
+      where $\Delta {\bf u}_k = {\bf u}_k - {\bf u}_{k-1}$.
+
+      Since we're iteratively computing the Jacobian with \eq{\eqref{eq:J-iteration}}, we must choose an adequate initial guess $\mathbb{J}_0$. Assume that $M_{A,B}|_0 \approx M^\text{Kerr}_{A,B}|_0$ and $\vec\chi_{A,B}|_0 \approx \vec\chi^\text{Kerr}_{A,B}|_0$, then
+      \begin{equation}
+        \frac{\partial (M_{A,B} - M^*_{A,B})}{\partial M^\text{Kerr}_{A,B}}\Bigg|_0
+        \approx \frac{\partial (\chi^i_{A,B} - \chi^{*,i}_{A,B})}{\partial \chi^{\text{Kerr},i}_{A,B}}\Bigg|_0
+        \approx 1.
+      \end{equation}
+      Using a Newtonian center of mass approximation, we know that
+      \begin{equation}
+        \vec C_\text{CoM} \approx \frac{M_A \vec c_A + M_B \vec c_B}{M_A + M_B} + \vec C_0,
+      \end{equation}
+      where $\vec c_{A,B}$ are the centers of black holes $A$ and $B$. Note that we choose $\vec c_{A,B}$ so that
+      \begin{equation}
+        \frac{M_A \vec c_A + M_B \vec c_B}{M_A + M_B} = 0.
+      \end{equation}
+      Hence,
+      \begin{equation}
+        \frac{\partial (C_\text{CoM}^i)}{\partial C_0^i}\Bigg|_0 \approx 1.
+      \end{equation}
+      We can also use a Newtonian linear momentum approximation:
+      \begin{equation}
+        \vec P_\text{ADM} \approx (M_A + M_B) \Big[ (\vec \Omega_0 \times \vec C_\text{CoM}) + \dot a_0 \vec C_\text{CoM} + \vec v_0 \Big],
+      \end{equation}
+      where $\vec \Omega_0$ is the initial angular velocity and $\vec \dot a_0$ is the initial radial expansion velocity\footnote{These initial orbit parameters show up here because they are added to the boundary condition of the shift $\beta^i$.}. Typically, these initial orbit parameters are small and $M_A + M_B \approx 1$ in code units. Then,
+      \begin{equation}
+        \frac{\partial (P_\text{ADM}^i)}{\partial v_0^i}\Bigg|_0 \approx 1.
+      \end{equation}
+      All the other partial derivatives that go into $\mathbb{J}_0$ are approximately zero under the assumptions imposed above. Therefore, a good initial guess for the Jacobian is
+      \begin{equation}
+        \mathbb{J}_0 \approx \mathbb{I},
+      \end{equation}
+      a 14-by-14 identity matrix.
+    
   \section{Results}
 
     \subsection{Convergence of asymptotic quantities}

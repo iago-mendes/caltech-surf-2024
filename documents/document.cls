@@ -166,10 +166,8 @@
 		\textcolor{red}{[TO-DO: #1]}
 	}
 
-	\newcommand{\eq}[1]{
-		Eq.~#1
-	}
+	\newcommand{\eq}[1]
+		{Eq.~#1}
 
-	\newcommand{\eqs}[1]{
-		Eqs.~#1
-	}
+	\newcommand{\eqs}[1]
+		{Eqs.~#1}
