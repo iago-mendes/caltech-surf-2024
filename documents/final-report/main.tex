@@ -66,18 +66,57 @@
     
     As part of an effort to allow researchers to fully simulate BBH in {\tt SpECTRE}, an initial data procedure similar to the one in {\tt SpEC} needs to be completed. This is greatly benefitted by a scalable elliptic solver that was recently developed \cite{Vu}, which can now be used to solve the initial data equations. Be that as it may, before the start of the SURF program, {\tt SpECTRE} did not have a way to enforce specific masses and spins for the black holes or to avoid drifts in their orbital trajectories. This report describes how we addressed these issues.
 
-    In section...
+    \todo{Explain the purpose of each section}
 
-  \section{Theory}
+  \section{Background}
 
-    \subsection{The XCTS system}
+    \todo{Introduce 3+1 decomposition and the ADM formalism, referring to Figure \ref{fig:3+1-decomposition}}
 
-      To find initial data, {\tt SpECTRE} uses the extended conformal thin-sandwich (XCTS) decomposition, which casts Einstein's equations as a system of five elliptic PDEs:
-      
+    \begin{figure}
+			\centering
+      \includegraphics[width=0.4\textwidth]{assets/3+1-decomposition.png}
+      \caption{Foliation of 4D spacetime into 3D spatial slices at different times. This image is originally from Figure 2.1 in \cite{BaumgarteShapiro}.}
+      \label{fig:3+1-decomposition}
+		\end{figure}
 
+    \todo{Talk about conformal decomposition and the XCTS equations}
+
+    % To find initial data, {\tt SpECTRE} uses the extended conformal thin-sandwich (XCTS) decomposition, which casts Einstein's equations as a system of five elliptic PDEs:
+
+    \todo{Mention SKS and free data, referring to Figure \ref{fig:free-data}}
+
+    \begin{figure}
+      \centering
+      \begin{tikzpicture}[scale=1.5]
+        \draw[very thick] (-2,0) circle (0.75cm);
+        \draw[very thick] (+2,0) circle (0.75cm);
+
+        \node at (-2,0) {$M^\text{Kerr}_A$};
+        \node at (+2,0) {$M^\text{Kerr}_B$};
+
+        \node at (-2,-1.4) {$\vec\chi^\text{Kerr}_A$};
+        \node at (+2,-1.4) {$\vec\chi^\text{Kerr}_B$};
+
+        \draw[->] (-2.5,-0.75) to [out=-80,in=-100] (-1.5,-0.75);
+        \draw[->] (1.5,-0.75) to [out=-80,in=-100] (2.5,-0.75);
+
+        \draw[dashed] (-1.25,0) -- (1.25,0);
+        \node at (0,0) {$\boldsymbol\times$};
+        \node at (0,1) {$\boldsymbol\times$};
+        \draw[->] (0,0.1) -- (0,0.9) node[pos = 0.5, anchor = east] {$\vec C_0$};
+
+        \draw[dashed] (0,-0.25) ellipse [x radius=4cm, y radius=2cm];
+        \draw[->] (1.5,1.6) -- (3.5,1.75) node[pos = 1, anchor = north west] {$\vec v_0$};
+      \end{tikzpicture}
+      \caption{}
+      \label{fig:free-data}
+    \end{figure}
+
+  \section{Methods}
+  
     \subsection{Calculation of asymptotic quantities}
 
-  \section{Numerical method}
+    \subsection{Control loop}
   
   \section{Results}
 
@@ -103,7 +142,7 @@
 
     \subsection{Control iterations}
 
-    \subsection{Tests over the parameter space}
+    % \subsection{Tests over the parameter space}
 
   \section{Conclusion}
 

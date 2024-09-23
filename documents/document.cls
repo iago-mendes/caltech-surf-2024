@@ -161,3 +161,7 @@
 			\caption{#6}
 		\end{figure}
 	}
+
+	\newcommand{\todo}[1]{
+		\textcolor{red}{[TO-DO: #1]}
+	}
