@@ -15,3 +15,6 @@ Schwarzschild
 quasi-Newton-Raphson
 Eq
 integrand
+unboosted
+unshifted
+Galerkin

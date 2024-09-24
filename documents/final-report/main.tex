@@ -202,7 +202,7 @@
       An attentive reader might have noticed that we have used Gauss' theorem in two different ways. That is, we used the conformal covariant derivative $\bar D_i$ and the conformal volume element $d\bar{V}$ in \eq{\eqref{eq:Madm-Gauss}}, but the partial derivative $\partial_i$ and the Euclidean volume element $dV$ in \eq{\eqref{eq:CoM-Gauss}} and \eq{\eqref{eq:Padm-Gauss}}. Both approaches are equivalent \cite{DeBenedictis_1998, Teukolsky_2016}, as long as we are consistent.
       
       In practice, we cannot {\tt SpECTRE} cannot evaluate volume integrals over all space because the interior of the black holes are excised from the domain. Hence, if we wish to use the infinite volume integrals, we must still perform finite surface integrals enclosing the excisions. For practicality, we choose to do such integrals over the excisions themselves. If we let $S_0$ be the combination of the excision surfaces, the resulting computations become
-      \begin{equation}
+      \begin{equation} \label{eq:Madm-mixed}
         \begin{aligned}
         M_\text{ADM}
         &= \frac{1}{16\pi} \oint_{S_0}  \Big(
@@ -224,7 +224,7 @@
             \Big) d\bar{V},
         \end{aligned}
       \end{equation}
-      \begin{equation}
+      \begin{equation} \label{eq:CoM-mixed}
         \begin{aligned}
           C_\text{CoM}^i
           &= \frac{3}{8 \pi M_\text{ADM}}
@@ -237,7 +237,7 @@
               \Big) dV,
         \end{aligned}
       \end{equation}
-      \begin{equation}
+      \begin{equation} \label{eq:Padm-mixed}
         \begin{aligned}
           P_\text{ADM}^i
           &= \frac{1}{8\pi}
@@ -377,27 +377,70 @@
 
     \subsection{Convergence of asymptotic quantities}
 
+      We have tested our calculation of asymptotic quantities with analytic solutions of a single black hole, as well as with a numeric solution to the XCTS equations for BBH. We use analytic solutions that describe a Schwarzschild black hole of mass $M$ in:
+      \begin{itemize}
+        \item Isotropic coordinates;
+        \item Isotropic coordinates with a boost speed $v$;
+        \item Kerr-Schild coordinates;
+        \item Kerr-Schild coordinates with a boost speed $v$.
+      \end{itemize}
+      For the unboosted analytic solutions, the expected values of $M_\text{ADM}$ and $P_\text{ADM}$ are
+      \begin{equation}
+        M_\text{ref} = M \quad
+      \end{equation}
+      and
+      \begin{equation}
+        P_\text{ref} = 0.
+      \end{equation}
+      For the boosted analytic solutions, the expected values of $M_\text{ADM}$ and $P_\text{ADM}$ are
+      \begin{equation}
+        M_\text{ref} = \gamma M
+      \end{equation}
+      and
+      \begin{equation}
+        P_\text{ref} = \gamma M v,
+      \end{equation}
+      where $\gamma = 1 / \sqrt{1 - v^2}$ is the Lorentz factor. We also use a BBH solution for an equal-mass non-spinning case, implying that the expected value of $P_\text{ADM}$ is
+      \begin{equation}
+        P_\text{ref} = 0.
+      \end{equation}
+      Since we do not know the expected value of $M_\text{ADM}$ for the BBH solution, we use the result at the largest outer radius $R$ as a reference:
+      \begin{equation}
+        M_\text{ref} = M_\text{ADM} |_{\max R}.
+      \end{equation}
+
       \begin{figure}
         \centering
         \includegraphics[width=\textwidth]{../../plots/final_report/distance_convergence_Madm_Padm.pdf}
-        \caption{}
+        \caption{Convergence with distance for $M_\text{ADM}$ and $P_\text{ADM}$. ``Surface'' indicates results from evaluating the infinite surface integrals defined in \eq{\eqref{eq:Madm-surf}} and \eq{\eqref{eq:Padm-surf}}. ``Volume'' indicates results from evaluating the finite surface integrals and the infinite volume integrals defined in \eq{\eqref{eq:Madm-mixed}} and \eq{\eqref{eq:Padm-mixed}}.}
+        \label{fig:distance_convergence_Madm_Padm}
       \end{figure}
+
+      Figure \ref{fig:distance_convergence_Madm_Padm} compares the difference between the measured $M_\text{ADM}$ and $P_\text{ADM}$ with the reference values $M_\text{ref}$ and $P_\text{ref}$, as described in the previous paragraph. For each subplot, we see how this residual evolves as we increase the outer radius $R$ of the domain, which serves as ``infinity'' in these calculations. Since these quantities are defined asymptotically, we should approach the reference values as $R$ increases. Excluding trivial cases (in which the residuals already start very low), we see that the infinite surface integrals defined in \eq{\eqref{eq:Madm-surf}} and \eq{\eqref{eq:Padm-surf}} convergence just as expected. However, this is not the case for the finite surface integrals and infinite volume integrals defined in \eq{\eqref{eq:Madm-mixed}} and \eq{\eqref{eq:Padm-mixed}}. Specifically, we see that the results do not convergence at all for the boosted cases.  Other than that, this approach behaves as expected.
 
       \begin{figure}
         \centering
         \includegraphics[width=0.85\textwidth]{../../plots/final_report/distance_convergence_CoM.pdf}
-        \caption{}
+        \caption{Convergence with distance for $\vec C_\text{CoM}$. ``Surface'' indicates results from evaluating the infinite surface integral defined in \eq{\eqref{eq:CoM-surf}}. ``Volume'' indicates results from evaluating the finite surface integral and the infinite volume integral defined in \eq{\eqref{eq:CoM-mixed}}. Residuals for each component of $\vec C_\text{CoM}$ are shown for an unshifted solution ($C_0^z = 0$) and for a shifted solution ($C_0^z = 0.1$).}
+        \label{fig:distance_convergence_CoM}
       \end{figure}
+
+      To study the center of mass calculations, we need a different analysis. First, the Kerr-Schild solutions do not fall off to flatness fast enough to satisfy the assumptions for \eq{\eqref{eq:CoM-surf}} to hold. Second, the expected $\vec C_\text{CoM}$ value for the Isotropic and BBH solutions are zero, so we need to shift the solution to get a non-vanishing result. Figure \ref{fig:distance_convergence_CoM} shows some useful results taking these points into consideration.
+      
+      An important feature in Figure \ref{fig:distance_convergence_CoM} is that the results seem to diverge from the expected value as we increase $R$. We do not fully understand why this occurs, but our hypothesis is that there is a round-off error in the nature of this calculation that grows substantially as we increase $R$. One way to interpret \eq{\eqref{eq:CoM-surf}} is that we are summing over the unit vectors $n^i$, rescaled by $\psi^4$, in all directions. If $\psi(\vec r)$ is constant, no rescaling happens and all the unit vectors cancel out. If $\psi(\vec r)$ is not constant, then $\vec C_\text{CoM}$ will emerge from the difference of large numbers. With larger and larger numbers being involved in this cancellation (i.e. with increasing $R$), we loose numerical accuracy. In other words, we are seeking the subdominant terms. This hypothesis makes sense when we look at the residuals of the shifted solutions. We see that the results converge as we increase $R$ until when the residuals reach the level of round-off errors (indicated by the residuals of the unshifted solutions).
+
+      Comparing the ``volume'' residuals with the ``surface'' residuals, we see that \eq{\eqref{eq:CoM-mixed}} leads to higher round-off errors than \eq{\eqref{eq:CoM-surf}}. This also makes sense because the volume integral involves many more elements. However, we notice a strange behavior of the $C_\text{CoM}^x$ ``volume'' residuals for the unshifted BBH solution. For that specific case, we see that the x component of \eq{\eqref{eq:CoM-mixed}} diverges since the beginning, which does not occur anymore if a z-shift is added to the solution. This might be an indication of a bug in the implementation of the method.
 
       \begin{figure}
         \centering
         \includegraphics[width=\textwidth]{../../plots/final_report/resolution_convergence.pdf}
-        \caption{}
+        \caption{Convergence with resolution for $M_\text{ADM}$, $P_\text{ADM}$, and $C_\text{CoM}$. Each subplot shows the difference at each polynomial order $P$ relative to the highest $P$ result for multiple refinement levels $L$.}
+        \label{fig:resolution_convergence}
       \end{figure}
 
-    \subsection{Control iterations}
+      Apart from knowing that we approach the expected values for increasing $R$, we must confirm that the results get more accurate with resolution. Figure \ref{fig:resolution_convergence} shows that the residuals in general converge exponentially with polynomial order $P$ and converge faster with higher refinement level $L$, as expected for the Discontinuous Galerkin scheme used in {\tt SpECTRE} \cite{DGMethods}. Some $C_\text{CoM}$ convergence plots do not follow this trend, but this seems to occur when the residual levels are close to the round-off errors seen in Figure \ref{fig:distance_convergence_CoM}.
 
-    % \subsection{Tests over the parameter space}
+    \subsection{Control iterations}
 
   \section{Conclusion}
 
