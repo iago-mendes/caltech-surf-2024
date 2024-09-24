@@ -9,10 +9,11 @@
 \newcommand{\Cornell}{Cornell Center for Astrophysics and Planetary Science, Cornell University, Ithaca, New York 14853, USA}
   \newcommand{\CornellId}{3}
 
-\begin{document}
-  \thispagestyle{plain}
+\fancyhead[OL]{\it Parameter Control in Binary Black Hole Initial Data}
+\fancyhead[ER]{\it Parameter Control in Binary Black Hole Initial Data}
 
-  \vspace*{0.5cm}
+\begin{document}
+  \thispagestyle{title}
 
   \begin{center}
     \Large\bf
@@ -49,8 +50,6 @@
   \begin{center}
     (Dated: \today)
   \end{center}
-
-  \vspace*{0.5cm}
 
   \section*{Abstract}
 
@@ -441,6 +440,13 @@
       Apart from knowing that we approach the expected values for increasing $R$, we must confirm that the results get more accurate with resolution. Figure \ref{fig:resolution_convergence} shows that the residuals in general converge exponentially with polynomial order $P$ and converge faster with higher refinement level $L$, as expected for the Discontinuous Galerkin scheme used in {\tt SpECTRE} \cite{DGMethods}. Some $C_\text{CoM}$ convergence plots do not follow this trend, but this seems to occur when the residual levels are close to the round-off errors seen in Figure \ref{fig:distance_convergence_CoM}.
 
     \subsection{Control iterations}
+
+      \begin{figure}
+        \centering
+        \includegraphics[width=0.85\textwidth]{../../plots/final_report/control_iterations.pdf}
+        \caption{}
+        \label{fig:control_iterations}
+      \end{figure}
 
   \section{Conclusion}
 

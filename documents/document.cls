@@ -1,9 +1,16 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{document}[Document]
-\LoadClass[12pt]{article}
+\LoadClass[12pt, twoside]{article}
 
 % LIBRARIES
-	\RequirePackage[top=2cm, bottom=2.5cm, left=2cm, right=2cm, footskip=1cm, headsep=0.5cm]{geometry}
+	\RequirePackage[
+		inner=1.25in,
+		outer=1in,
+		top=1in,
+		bottom=1in,
+		headsep=0.5in,
+		footskip=0.5in
+	]{geometry}
 	\RequirePackage[utf8]{inputenc}
 	\RequirePackage{graphicx}
 	\RequirePackage[labelfont=bf, width=.8\textwidth]{caption}
@@ -22,10 +29,11 @@
 	\RequirePackage{subcaption}
 	\RequirePackage{fancyhdr}
 	\RequirePackage[sorting=none]{biblatex}
-	\RequirePackage[bottom, symbol]{footmisc}
+	\RequirePackage[bottom]{footmisc}
 	\RequirePackage{etoolbox}
 	\RequirePackage{orcidlink}
 	\RequirePackage{indentfirst}
+	\RequirePackage{titling}
 
 
 % SETUP
@@ -55,27 +63,19 @@
 	\fancypagestyle{default} {
 		\fancyhead{} % clear all header fields
 		\renewcommand{\headrule}{\hrulefill}
+		\fancyhead[OR]{\it \thepage}
+		\fancyhead[EL]{\it \thepage}
 
 		\fancyfoot{} % clear all footer fields
-		\renewcommand{\footrule}{\hrulefill}
-		\fancyfoot[R]{\textbf{\thepage}}
 	}
 	\pagestyle{default}
+	\fancypagestyle{title} {
+		\fancyhead{} % clear all header fields
+		\renewcommand{\headrule}{}
 
-	% Show footnotes in footer
-	\renewcommand{\footnoterule}{
-		\kern 0pt
-		\hrule width \textwidth
-		\kern 2pt
+		\fancyfoot{} % clear all footer fields
+		\fancyfoot[C]{\it \thepage}
 	}
-	\fancypagestyle{footnote} {
-		\renewcommand{\footrule}{}
-	}
-	\newcommand{\fnote}[1] {%
-		\footnote{#1}%
-		\thispagestyle{footnote}%
-	}
-
 
 % SECTIONS
 	\titleformat
@@ -97,7 +97,7 @@
 
 % COMMANDS
 
-	\renewcommand{\title}[3][noSubtitle] {
+	\newcommand{\header}[3][noSubtitle] {
 		\begin{center}
 			\vspace*{0.5cm}
 
