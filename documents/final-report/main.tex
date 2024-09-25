@@ -65,28 +65,9 @@
     
     As part of an effort to allow researchers to fully simulate BBH in {\tt SpECTRE}, an initial data procedure similar to the one in {\tt SpEC} needs to be completed. This is greatly benefitted by a scalable elliptic solver that was recently developed \cite{Vu}, which can now be used to solve the initial data equations. Be that as it may, before the start of the SURF program, {\tt SpECTRE} did not have a way to enforce specific masses and spins for the black holes or to avoid drifts in their orbital trajectories. This report describes how we addressed these issues.
 
-    \todo{Explain the purpose of each section}
-
-  \section{Background}
-
-    \todo{Introduce 3+1 decomposition and the ADM formalism, referring to Figure \ref{fig:3+1-decomposition}}
-
-    \begin{figure}
-			\centering
-      \includegraphics[width=0.4\textwidth]{assets/3+1-decomposition.png}
-      \caption{Foliation of 4D spacetime into 3D spatial slices at different times. This image is originally from Figure 2.1 in \cite{BaumgarteShapiro}.}
-      \label{fig:3+1-decomposition}
-		\end{figure}
-
-    \todo{Talk about conformal decomposition and the XCTS equations}
-
-    % To find initial data, {\tt SpECTRE} uses the extended conformal thin-sandwich (XCTS) decomposition, which casts Einstein's equations as a system of five elliptic PDEs:
-
-    \todo{Mention SKS and free data, referring to Figure \ref{fig:free-data}}
-
     \begin{figure}
       \centering
-      \begin{tikzpicture}[scale=1.5]
+      \begin{tikzpicture}[scale=1]
         \draw[very thick] (-2,0) circle (0.75cm);
         \draw[very thick] (+2,0) circle (0.75cm);
 
@@ -101,21 +82,23 @@
 
         \draw[dashed] (-1.25,0) -- (1.25,0);
         \node at (0,0) {$\boldsymbol\times$};
-        \node at (0,1) {$\boldsymbol\times$};
-        \draw[->] (0,0.1) -- (0,0.9) node[pos = 0.5, anchor = east] {$\vec C_0$};
+        \node at (0,1.5) {$\boldsymbol\times$};
+        \draw[->] (0,0.1) -- (0,1.4) node[pos = 0.5, anchor = east] {$\vec C_0$};
 
-        \draw[dashed] (0,-0.25) ellipse [x radius=4cm, y radius=2cm];
-        \draw[->] (1.5,1.6) -- (3.5,1.75) node[pos = 1, anchor = north west] {$\vec v_0$};
+        \draw[dashed] (0,0) ellipse [x radius=4cm, y radius=3cm];
+        \draw[->] (1.5,2.8) -- (3.25,2.95) node[pos = 1, anchor = north west] {$\vec v_0$};
       \end{tikzpicture}
-      \caption{}
+      \caption{\todo{write description}}
       \label{fig:free-data}
     \end{figure}
+
+    \todo{explain XCTS + SKS, introducing the free data and referring to Figure \ref{fig:free-data}}
 
   \section{Methods}
 
     \subsection{Calculation of asymptotic quantities}
 
-      In Newtonian mechanics, it is typically straightforward to compute the center of mass and the linear momentum of a system. However, in general relativity, these are asymptotic quantities -- defined by infinite surface integrals. Since the computational domains are coarser at their outer boundaries, these integrals tend to be very sensitivity to small errors, leading to less accurate results. To overcome this, we can cast these calculations as volume integrals using Gauss' theorem. Below, we explain the approaches we used to compute these asymptotic quantities in {\tt SpECTRE}.
+      In Newtonian mechanics, it is typically straightforward to compute the center of mass and the linear momentum of a system. However, in general relativity, these are asymptotic quantities -- defined by infinite surface integrals. Since the computational domains are coarser at their outer boundaries, these integrals tend to be very sensitivity to small errors, leading to less accurate results. To overcome this, we can cast these calculations as volume integrals using Gauss' divergence theorem. Below, we explain the approaches we used to compute these asymptotic quantities in {\tt SpECTRE}.
 
       We can measure the total energy of a system by computing the ADM mass $M_\text{ADM}$. In terms of conformal quantities, it takes the form of
       \begin{equation} \label{eq:Madm-surf}
@@ -166,7 +149,7 @@
       \begin{align}
         C_\text{CoM}^i
         &= \frac{3}{8 \pi M_\text{ADM}}
-            \oint_{S_\infty} \partial_j \Big( \psi^4 n^i n^j \Big) \, dV \label{eq:CoM-Gauss} \\
+            \int_{V_\infty} \partial_j \Big( \psi^4 n^i n^j \Big) \, dV \label{eq:CoM-Gauss} \\
         &= \frac{3}{4 \pi M_\text{ADM}}
             \int_{V_\infty} \frac{1}{r^2} \Big(
               2 \psi^3 \partial_j \psi x^i x^j
@@ -200,7 +183,7 @@
 
       An attentive reader might have noticed that we have used Gauss' theorem in two different ways. That is, we used the conformal covariant derivative $\bar D_i$ and the conformal volume element $d\bar{V}$ in \eq{\eqref{eq:Madm-Gauss}}, but the partial derivative $\partial_i$ and the Euclidean volume element $dV$ in \eq{\eqref{eq:CoM-Gauss}} and \eq{\eqref{eq:Padm-Gauss}}. Both approaches are equivalent \cite{DeBenedictis_1998, Teukolsky_2016}, as long as we are consistent.
       
-      In practice, we cannot {\tt SpECTRE} cannot evaluate volume integrals over all space because the interior of the black holes are excised from the domain. Hence, if we wish to use the infinite volume integrals, we must still perform finite surface integrals enclosing the excisions. For practicality, we choose to do such integrals over the excisions themselves. If we let $S_0$ be the combination of the excision surfaces, the resulting computations become
+      In practice, {\tt SpECTRE} cannot evaluate volume integrals over all space because the interior of the black holes are excised from the domain. Hence, if we wish to use the infinite volume integrals, we must still perform finite surface integrals enclosing the excisions. For practicality, we choose to do such integrals over the excisions themselves. If we let $S_0$ be the combination of the excision surfaces, the resulting expressions are
       \begin{equation} \label{eq:Madm-mixed}
         \begin{aligned}
         M_\text{ADM}
@@ -255,7 +238,7 @@
 
       Because of {\tt SpECTRE}'s task-based parallelism, we must first evaluate the integrals locally in each domain element. Then, we perform a reduction to combine the results from all elements into a single result for the entire domain.
 
-    \subsection{Control loop}
+    \subsection{Control scheme}
       
       Once the XCTS equations are solved, we have all the information that we need about the zero-time slice of spacetime. With this, we can use an apparent horizon finder to get measurements of the black holes in the constructed initial data. Let $M_A$, $M_B$, $\vec\chi_{A}$ and $\vec\chi_{B}$ be the masses and spins of the actual black holes that we have been able to create. In general, these values will differ from the ``target'' quantities $M^*_A$, $M^*_B$, $\vec\chi^*_{A}$ and $\vec\chi^*_{B}$. For example, suppose that we wish to simulate an equal-mass non-spinning case with $M^*_A = M^*_B = 0.5$ and $\vec\chi^*_{A} = \vec\chi^*_{B} = (0,0,0)$. In order to construct the SKS analytical expressions, it is natural to specify $M^\text{Kerr}_{A,B} = M^*_{A,B}$ and $\vec\chi^\text{Kerr}_{A,B} = \vec\chi^*_{A,B}$. With this, we can solve the XCTS equations and find horizons in the resulting initial data. Once we do it in {\tt SpECTRE}, we find that the resulting black hole parameters are actually $M_{A,B} \approx 0.6$ and $\vec\chi_{A,B} \approx (0,0,-0.002)$.
 
@@ -301,7 +284,7 @@
           \Big).
         \end{aligned}
       \end{equation}
-      Also, let the difference between the current and target physical parameters be represented as
+      Also, let the difference between the current and target physical parameters be represented the ``residual'' function
       \begin{equation}
         \begin{aligned}
           {\bf F}({\bf u})
@@ -334,7 +317,7 @@
       \begin{equation}\label{eq:u-iteration}
         {\bf u}_k = {\bf u}_{k-1} - \mathbb{J}^{-1}_{k-1} \cdot {\bf F}_{k-1}.
       \end{equation}
-      Note however that each evaluation of ${\bf F}({\bf u})$ is computationally expensive as it requires an entire Initial Data solve. Therefore, computing the Jacobian in \eq{\eqref{eq:u-iteration}} analytically is unfeasible. That said, we can find it numerically using Broyden's method \cite{NumericalRecipes}:
+      However, note that each evaluation of ${\bf F}({\bf u})$ is computationally expensive as it requires an entire initial data solve. Therefore, computing the Jacobian in \eq{\eqref{eq:u-iteration}} analytically is unfeasible. That said, we can find it numerically using Broyden's method \cite{NumericalRecipes}:
       \begin{equation}\label{eq:J-iteration}
         \mathbb{J}_k = \mathbb{J}_{k-1} + \frac{{\bf F}_k \otimes \Delta {\bf u}_k}{||\Delta {\bf u}_k||^2},
       \end{equation}
@@ -376,37 +359,7 @@
 
     \subsection{Convergence of asymptotic quantities}
 
-      We have tested our calculation of asymptotic quantities with analytic solutions of a single black hole, as well as with a numeric solution to the XCTS equations for BBH. We use analytic solutions that describe a Schwarzschild black hole of mass $M$ in:
-      \begin{itemize}
-        \item Isotropic coordinates;
-        \item Isotropic coordinates with a boost speed $v$;
-        \item Kerr-Schild coordinates;
-        \item Kerr-Schild coordinates with a boost speed $v$.
-      \end{itemize}
-      For the unboosted analytic solutions, the expected values of $M_\text{ADM}$ and $P_\text{ADM}$ are
-      \begin{equation}
-        M_\text{ref} = M \quad
-      \end{equation}
-      and
-      \begin{equation}
-        P_\text{ref} = 0.
-      \end{equation}
-      For the boosted analytic solutions, the expected values of $M_\text{ADM}$ and $P_\text{ADM}$ are
-      \begin{equation}
-        M_\text{ref} = \gamma M
-      \end{equation}
-      and
-      \begin{equation}
-        P_\text{ref} = \gamma M v,
-      \end{equation}
-      where $\gamma = 1 / \sqrt{1 - v^2}$ is the Lorentz factor. We also use a BBH solution for an equal-mass non-spinning case, implying that the expected value of $P_\text{ADM}$ is
-      \begin{equation}
-        P_\text{ref} = 0.
-      \end{equation}
-      Since we do not know the expected value of $M_\text{ADM}$ for the BBH solution, we use the result at the largest outer radius $R$ as a reference:
-      \begin{equation}
-        M_\text{ref} = M_\text{ADM} |_{\max R}.
-      \end{equation}
+      We have tested our calculation of asymptotic quantities with analytic solutions of a single black hole, as well as with a numeric solution to the XCTS equations for BBH. The analytic solutions we used describe a Schwarzschild black hole of mass $M$ in isotropic coordinates and in Kerr-Schild coordinates, both with and without a boost speed $v$. The expected values of $M_\text{ADM}$ and $P_\text{ADM}$ for the unboosted solutions are $M_\text{ref} = M$ and $P_\text{ref} = 0$, while the ones for the boosted solutions are $M_\text{ref} = \gamma M$ and $P_\text{ref} = \gamma M v$, where $\gamma = 1 / \sqrt{1 - v^2}$ is the Lorentz factor. We also use a BBH solution for an equal-mass non-spinning case, implying that the expected value of $P_\text{ADM}$ is $P_\text{ref} = 0$. Since we do not know the expected value of $M_\text{ADM}$ for the BBH solution, we use the result at the largest outer radius $R$ as a reference: $M_\text{ref} = M_\text{ADM} |_{\max R}$.
 
       \begin{figure}
         \centering
@@ -415,7 +368,7 @@
         \label{fig:distance_convergence_Madm_Padm}
       \end{figure}
 
-      Figure \ref{fig:distance_convergence_Madm_Padm} compares the difference between the measured $M_\text{ADM}$ and $P_\text{ADM}$ with the reference values $M_\text{ref}$ and $P_\text{ref}$, as described in the previous paragraph. For each subplot, we see how this residual evolves as we increase the outer radius $R$ of the domain, which serves as ``infinity'' in these calculations. Since these quantities are defined asymptotically, we should approach the reference values as $R$ increases. Excluding trivial cases (in which the residuals already start very low), we see that the infinite surface integrals defined in \eq{\eqref{eq:Madm-surf}} and \eq{\eqref{eq:Padm-surf}} convergence just as expected. However, this is not the case for the finite surface integrals and infinite volume integrals defined in \eq{\eqref{eq:Madm-mixed}} and \eq{\eqref{eq:Padm-mixed}}. Specifically, we see that the results do not convergence at all for the boosted cases.  Other than that, this approach behaves as expected.
+      Figure \ref{fig:distance_convergence_Madm_Padm} compares the difference between the measured $M_\text{ADM}$ and $P_\text{ADM}$ with the reference values $M_\text{ref}$ and $P_\text{ref}$, as described in the previous paragraph. For each subplot, we see how this residual evolves as we increase the outer radius $R$ of the domain, which serves as ``infinity'' in these calculations. Since these quantities are defined asymptotically, we should approach the reference values as $R$ increases. Excluding trivial cases (in which the residuals already start very low), we see that the infinite surface integrals defined in \eq{\eqref{eq:Madm-surf}} and \eq{\eqref{eq:Padm-surf}} converge just as expected. However, this is not the case for the finite surface integrals and infinite volume integrals defined in \eq{\eqref{eq:Madm-mixed}} and \eq{\eqref{eq:Padm-mixed}}. In fact, we see that the results do not converge at all for the boosted cases.  Other than that, this approach behaves as expected.
 
       \begin{figure}
         \centering
@@ -424,33 +377,84 @@
         \label{fig:distance_convergence_CoM}
       \end{figure}
 
-      To study the center of mass calculations, we need a different analysis. First, the Kerr-Schild solutions do not fall off to flatness fast enough to satisfy the assumptions for \eq{\eqref{eq:CoM-surf}} to hold. Second, the expected $\vec C_\text{CoM}$ value for the Isotropic and BBH solutions are zero, so we need to shift the solution to get a non-vanishing result. Figure \ref{fig:distance_convergence_CoM} shows some useful results taking these points into consideration.
+      To study the center of mass calculations, we need a different analysis. First, the Kerr-Schild solutions do not fall off to flatness fast enough to satisfy the assumptions for \eq{\eqref{eq:CoM-surf}} to hold. Second, the expected $\vec C_\text{CoM}$ value for the isotropic Schwarzschild and BBH solutions are zero, so we need to shift the solution to get a non-vanishing result. Figure \ref{fig:distance_convergence_CoM} shows some useful results taking these points into consideration.
       
       An important feature in Figure \ref{fig:distance_convergence_CoM} is that the results seem to diverge from the expected value as we increase $R$. We do not fully understand why this occurs, but our hypothesis is that there is a round-off error in the nature of this calculation that grows substantially as we increase $R$. One way to interpret \eq{\eqref{eq:CoM-surf}} is that we are summing over the unit vectors $n^i$, rescaled by $\psi^4$, in all directions. If $\psi(\vec r)$ is constant, no rescaling happens and all the unit vectors cancel out. If $\psi(\vec r)$ is not constant, then $\vec C_\text{CoM}$ will emerge from the difference of large numbers. With larger and larger numbers being involved in this cancellation (i.e. with increasing $R$), we loose numerical accuracy. In other words, we are seeking the subdominant terms. This hypothesis makes sense when we look at the residuals of the shifted solutions. We see that the results converge as we increase $R$ until when the residuals reach the level of round-off errors (indicated by the residuals of the unshifted solutions).
 
-      Comparing the ``volume'' residuals with the ``surface'' residuals, we see that \eq{\eqref{eq:CoM-mixed}} leads to higher round-off errors than \eq{\eqref{eq:CoM-surf}}. This also makes sense because the volume integral involves many more elements. However, we notice a strange behavior of the $C_\text{CoM}^x$ ``volume'' residuals for the unshifted BBH solution. For that specific case, we see that the x component of \eq{\eqref{eq:CoM-mixed}} diverges since the beginning, which does not occur anymore if a z-shift is added to the solution. This might be an indication of a bug in the implementation of the method.
+      Comparing the ``volume'' residuals with the ``surface'' residuals in Figure \ref{fig:distance_convergence_CoM}, we see that \eq{\eqref{eq:CoM-mixed}} leads to higher round-off errors than \eq{\eqref{eq:CoM-surf}}. This also makes sense because the volume integral involves many more domain elements. However, we notice a strange behavior of the $C_\text{CoM}^x$ ``volume'' residuals for the unshifted BBH solution. For that specific case, we see that the x component of \eq{\eqref{eq:CoM-mixed}} diverges since the beginning, which does not occur anymore if a z-shift is added to the solution. This might be an indication of a bug in the implementation of the method.
+
+      \begin{figure}
+        \centering
+        \includegraphics[width=0.85\textwidth]{../../plots/final_report/distance_convergence_CoM_round_off.pdf}
+        \caption{Comparison between different versions of the center-of-mass surface integrals. $[\psi^4 n^i]$ refers to \eq{\eqref{eq:CoM-surf}}, while $[(\psi^4-1) n^i]$ refers to \eq{\eqref{eq:CoM-surf-1}}. \todo{update BBH with results from \eq{\ref{eq:CoM-surf-1}}}}
+        \label{fig:distance_convergence_CoM_round_off}
+      \end{figure}
+
+      We can modify \eq{\eqref{eq:CoM-surf}} in an attempt to address this issue with round-off errors. One way to do this is to transform the integrand $\psi^4 n^i$ to $(\psi^4 - 1) n^i$. Analytically, this should not change the result because
+      \begin{align}
+        C_\text{CoM}^i
+        &= \frac{3}{8 \pi M_\text{ADM}} \oint_{S_\infty} (\psi^4-1) n^i \, dA \label{eq:CoM-surf-1} \\
+        &= \frac{3}{8 \pi M_\text{ADM}} \left( \oint_{S_\infty} \psi^4 n^i \, dA - \oint_{S_\infty} n^i \, dA \right) \\
+        &= \frac{3}{8 \pi M_\text{ADM}} \oint_{S_\infty} \psi^4 n^i \, dA.
+      \end{align}
+      Numerically, this makes the terms being cancelled in the calculation smaller. Figure \ref{fig:distance_convergence_CoM_round_off} compares the residuals for each integrand. From this, it is clear that \eq{\eqref{eq:CoM-surf-1}} significantly reduces the round-off errors. Therefore, we use this version for the remaining results of the center-of-mass surface integral.
 
       \begin{figure}
         \centering
         \includegraphics[width=\textwidth]{../../plots/final_report/resolution_convergence.pdf}
-        \caption{Convergence with resolution for $M_\text{ADM}$, $P_\text{ADM}$, and $C_\text{CoM}$. Each subplot shows the difference at each polynomial order $P$ relative to the highest $P$ result for multiple refinement levels $L$.}
+        \caption{Convergence with resolution for $M_\text{ADM}$, $P_\text{ADM}$, and $C_\text{CoM}$. Each subplot shows the difference at each polynomial order $P$ relative to the highest $P$ result for multiple refinement levels $L$. \todo{update BBH surface with results from \eq{\ref{eq:CoM-surf-1}}}}
         \label{fig:resolution_convergence}
       \end{figure}
 
-      Apart from knowing that we approach the expected values for increasing $R$, we must confirm that the results get more accurate with resolution. Figure \ref{fig:resolution_convergence} shows that the residuals in general converge exponentially with polynomial order $P$ and converge faster with higher refinement level $L$, as expected for the Discontinuous Galerkin scheme used in {\tt SpECTRE} \cite{DGMethods}. Some $C_\text{CoM}$ convergence plots do not follow this trend, but this seems to occur when the residual levels are close to the round-off errors seen in Figure \ref{fig:distance_convergence_CoM}.
+      Apart from knowing that we approach the expected values for increasing $R$, we must confirm that the results get more accurate with resolution. Figure \ref{fig:resolution_convergence} shows that the residuals in general converge exponentially with polynomial order $P$ and converge faster with higher refinement level $L$, as expected for the Discontinuous Galerkin scheme used in {\tt SpECTRE} \cite{DGMethods}. The center-of-mass convergence plots do not follow this trend, which could be related to the round-off errors, but they still converge as we increase resolution. It is also important to note that the BBH center-of-mass ``volume'' integral has large residuals, which is expected given the $C_\text{CoM}^x$ divergence in Figure \ref{fig:distance_convergence_CoM}.
 
-    \subsection{Control iterations}
+      The motivation to apply Gauss' divergence theorem in the calculation of the asymptotic quantities was to achieve higher accuracy. Instead of relying on the coarse area elements at the outer boundary (i.e., \eqs{\eqref{eq:Madm-surf}, \eqref{eq:CoM-surf}}, \eqref{eq:Padm-surf}), we can use the more-precise area elements at the inner boundaries along with the volume elements of the entire domain (i.e., \eqs{\eqref{eq:Madm-mixed}--\eqref{eq:Padm-mixed}}). However, Figure \ref{fig:resolution_convergence} shows that we did not get much benefit out of this transformation. The ADM masses appear to be almost identical between the surface and volume results. The ADM linear momenta have slightly lower residuals for the BBH volume results compared to the surface ones, but nothing too significant. The centers of mass as volume integrals have higher round-off errors than their surface counterparts, and we see occasional blow-ups in the volume version.
+
+      Therefore, the volume integrals do not seem favorable for our purposes at the current stage. In {\tt SpEC}, this transformation was used in the computation of the ADM linear momentum $\vec P_\text{ADM}$ and the ADM angular momentum $\vec J_\text{ADM}$ \cite{Serguei}. There, accuracy was improved by one order of magnitude for $\vec P_\text{ADM}$ and by several orders of magnitude for $\vec J_\text{ADM}$ \cite{Serguei}. That said, it is important to note that {\tt SpEC}'s BBH outer boundary is $R \sim 10^{10}$ \cite{Serguei}, while {\tt SpECTRE}'s is $R \sim 10^5$ due to its better boundary conditions \cite{Vu_2024}. The smaller outer boundary might explain why we don't see a significant improvement when using the $\vec P_\text{ADM}$ volume integrals. We plan to compute $\vec J_\text{ADM}$ in the future, so it is worth re-evaluating this at that time.
+
+    \subsection{Control of BBH parameters}
+
+      \begin{table}
+        \centering
+        \def\arraystretch{1.5}
+		    \setlength{\tabcolsep}{0.5cm}
+        \begin{tabular}{lccc}
+          \hline
+          \hline
+          Name & $q$ & $\vec \chi^*_A$ & $\vec \chi^*_B$ \\
+          \hline
+          {\tt q1} & 1 & (0,0,0) & (0,0,0) \\
+          {\tt q3} & 3 & (0,0,0) & (0,0,0) \\
+          {\tt q3-spin} & 3 & (0,0,0.9) & (0,0,0) \\
+          \hline
+          \hline
+        \end{tabular}
+        \caption{Target parameters of the BBH runs. The masses $M^*_{A,B}$ are determined by the mass ratio $q = M^*_A / M^*_B$ and $M^*_A + M^*_B = 1$.}
+        \label{tab:bbh-runs}
+      \end{table}
+
+      To test our control loop, we ran three BBH cases. Table \ref{tab:bbh-runs} shows the target parameters for each of these runs. Figure \ref{fig:control_iterations} shows how many control iterations were needed for each run as well as how the control residual ${\bf F}({\bf u})$ behaved. We finish the control loop when the largest component of ${\bf F}({\bf u})$ reaches the residual tolerance of $10^{-6}$. From these results, it is clear that our control scheme finished in very few iterations and was able to handle scenarios from a simple equal-mass non-spinning run to a non-trivial mass ratio with high spin.
 
       \begin{figure}
         \centering
         \includegraphics[width=0.85\textwidth]{../../plots/final_report/control_iterations.pdf}
-        \caption{}
+        \caption{Control results for the BBH runs shown in Table \ref{tab:bbh-runs}. The control residuals ${\bf F}({\bf u})$ are shown for each control iteration $k$. Here, $\vec C_\text{CoM}$ and $\vec P_\text{ADM}$ were computed using \eq{\eqref{eq:CoM-surf-1}} and \eq{\eqref{eq:Padm-surf}}. \todo{update with results from \eq{\ref{eq:CoM-surf-1}}}}
         \label{fig:control_iterations}
       \end{figure}
 
+      We attempted to run the BBH cases shown in Table 1 of \cite{Serguei}, but we did not succeed. For the {\tt Spin0.9999} and {\tt q10} runs, {\tt SpECTRE}'s horizon finder failed after the first XCTS solve. There was a recent update to the {\tt SpECTRE} BBH domain, which might have fixed such problems. For the {\tt q3} and {\tt q10} runs, the free data updated by \eq{\eqref{eq:u-iteration}} contained invalid values like negative masses and $\chi > 1$. This could be fixed by adding constraints to the iterative loop, making sure that the free data stays within an acceptable range.
+
   \section{Conclusion}
 
+    {\tt SpECTRE} is now capable of controlling physical parameters in BBH initial data. Our control scheme not only enforces specific masses and spins for the desired simulation, but also avoids drifts in the orbital trajectories by minimizing the center of mass and the total linear momentum. For this, we had to compute asymptotic quantities defined as infinite integrals, which can be cast as surface integrals or volume integrals. The integral results for the total energy and linear momentum convergence nicely. Although the integral results for the center of mass has some issues that must be investigated, the surface integral achieves acceptable residuals for the current applications.
+
+    There are many possible improvements to the work described in this report. For instance, we plan to find ways to get around the round-off errors observed in the center-of-mass integrals. This could include changes to the integral itself, like in \eq\eqref{eq:CoM-surf-1}, or alternative integration methods, such as the spectral integration done in {\tt SpEC} \cite{Serguei}. We should also make the control scheme more rigorous with constraints for the free data and more efficient with optimizations like line search, allowing {\tt SpECTRE} to reach more of the parameter space.
+
+    There is also a lot of interest in follow-up work. For example, it is important to understand whether we have made significant improvements in our control scheme relative to the one used by {\tt SpEC}, either in terms of performance or parameter space. To this purpose, we need to do a careful comparison between the two codes. Additionally, by implementing the computation of total angular momentum $\vec J_\text{ADM}$, we would be able to control $M_\text{ADM}$ and $\vec J_\text{ADM}$ to generate initial data for BBH hyperbolic encounters.
+
   \section*{Acknowledgements}
+
+  \todo{write acknowledgements}
 
   \section*{References}
 
