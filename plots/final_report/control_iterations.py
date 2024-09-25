@@ -96,6 +96,6 @@ fig.set_size_inches(12, 8)
 plt.tight_layout()
 plt.subplots_adjust(wspace=0.03, hspace=0.04)
 
-plt.show()
-
 fig.savefig(f'control_iterations.pdf', format='pdf', bbox_inches='tight')
+
+plt.show()

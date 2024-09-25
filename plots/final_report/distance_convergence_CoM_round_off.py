@@ -91,6 +91,11 @@ def get_test_residuals(unshifted_dir, shifted_dir):
       centers_of_mass_x.append(np.abs(center_of_mass_x))
       centers_of_mass_y.append(np.abs(center_of_mass_y))
       centers_of_mass_z.append(np.abs(center_of_mass_z - z_shift))
+      # centers_of_mass_z.append(center_of_mass_z)
+    
+    # centers_of_mass_z = np.array(centers_of_mass_z)
+    # centers_of_mass_z -= centers_of_mass_z[-1]
+    # centers_of_mass_z = np.abs(centers_of_mass_z[:-1])
     
     residuals.append({
       'distances': distances,
@@ -119,20 +124,20 @@ def plot(title, residuals):
     ax3.plot(distances, residuals[i]['centers_of_mass_z'], label=label, color=colors[i], marker=markers[i])
 
 plot(
-  'Isotropic (surface)',
+  r'Isotropic [$\psi^4 n^i$]',
   get_test_residuals('../adm_integrals/data/isotropic/surface', '../adm_integrals/data/isotropic_shifted/surface')
 )
 plot(
-  'Isotropic (volume)',
-  get_test_residuals('../adm_integrals/data/isotropic/volume', '../adm_integrals/data/isotropic_shifted/volume')
+  r'Isotropic [$(\psi^4 - 1) n^i$]',
+  get_test_residuals('../adm_integrals/data/isotropic/surface-new', '../adm_integrals/data/isotropic_shifted/surface-new')
 )
 plot(
-  'BBH (surface)',
+  r'BBH [$\psi^4 n^i$]',
   get_bbh_residuals('../adm_integrals/data/bbh/surface', '../adm_integrals/data/bbh_shifted/surface')
 )
 plot(
-  'BBH (volume)',
-  get_bbh_residuals('../adm_integrals/data/bbh/volume', '../adm_integrals/data/bbh_shifted/volume')
+  r'BBH [$(\psi^4 - 1) n^i$]',
+  get_bbh_residuals('../adm_integrals/data/bbh/surface', '../adm_integrals/data/bbh_shifted/surface')
 )
 
 for ax in axes.flatten():
@@ -160,6 +165,6 @@ fig.set_size_inches(12,10)
 plt.tight_layout()
 plt.subplots_adjust(wspace=0.275, hspace=0.025)
 
-fig.savefig(f'distance_convergence_CoM.pdf', format='pdf', bbox_inches='tight')
+fig.savefig(f'distance_convergence_CoM_round_off.pdf', format='pdf', bbox_inches='tight')
 
 plt.show()

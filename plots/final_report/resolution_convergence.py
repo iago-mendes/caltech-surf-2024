@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from cycler import cycler
 import h5py
+import os
 
 colors = ['#4c72b0', '#55a868', '#c44e52', '#8172b3', '#937860', '#da8bc3', '#8c8c8c', '#ccb974', '#64b5cd']
 markers = ['o', '^', 's', 'v', 'D', '<', '>', '*', '+']
@@ -88,7 +89,13 @@ def get_test_residuals(dir):
 
     adm_mass_entries = np.genfromtxt(f'{dir}/Test_AdmMass.output', delimiter=',')
     adm_linear_momentum_entries = np.genfromtxt(f'{dir}/Test_AdmLinearMomentum.output', delimiter=',')
-    center_of_mass_entries = np.genfromtxt(f'{dir}/Test_CenterOfMass.output', delimiter=',')
+
+    center_of_mass_fname = ''
+    if os.path.exists(f'{dir}/Test_CenterOfMass-new.output'):
+      center_of_mass_fname = f'{dir}/Test_CenterOfMass-new.output'
+    else:
+      center_of_mass_fname = f'{dir}/Test_CenterOfMass.output'
+    center_of_mass_entries = np.genfromtxt(center_of_mass_fname, delimiter=',')
 
     for row in range(len(adm_mass_entries)):
       R, row_L, P, adm_mass, _ = adm_mass_entries[row]
@@ -214,6 +221,6 @@ fig.set_size_inches(14,10)
 plt.tight_layout()
 plt.subplots_adjust(wspace=0.31, hspace=0.03)
 
-plt.show()
-
 fig.savefig(f'resolution_convergence.pdf', format='pdf', bbox_inches='tight')
+
+plt.show()
