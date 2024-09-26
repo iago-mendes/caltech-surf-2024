@@ -86,6 +86,9 @@ for i, row in enumerate(np.transpose(axes)):
 for ax in axes[1:].flatten():
   ax.set_yticklabels([])
 
+for ax in axes[:,:-1].flatten():
+  ax.set_xticklabels([])
+
 for right_ax in axes[-1]:
   right_ax.legend(loc='center left', bbox_to_anchor=(0.99, 0.5))
 

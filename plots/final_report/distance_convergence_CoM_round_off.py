@@ -137,7 +137,7 @@ plot(
 )
 plot(
   r'BBH [$(\psi^4 - 1) n^i$]',
-  get_bbh_residuals('../adm_integrals/data/bbh/surface', '../adm_integrals/data/bbh_shifted/surface')
+  get_bbh_residuals('../adm_integrals/data/bbh/surface-new', '../adm_integrals/data/bbh_shifted/surface-new')
 )
 
 for ax in axes.flatten():

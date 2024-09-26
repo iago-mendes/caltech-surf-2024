@@ -181,7 +181,7 @@ plot(
 )
 plot(
   'BBH (surface)',
-  get_bbh_residuals('../adm_integrals/data/bbh/surface')
+  get_bbh_residuals('../adm_integrals/data/bbh/surface-new')
 )
 plot(
   'BBH (volume)',
