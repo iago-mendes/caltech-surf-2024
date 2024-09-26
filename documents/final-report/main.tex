@@ -65,36 +65,52 @@
     
     As part of an effort to allow researchers to fully simulate BBH in {\tt SpECTRE}, an initial data procedure similar to the one in {\tt SpEC} needs to be completed. This is greatly benefitted by a scalable elliptic solver that was recently developed \cite{Vu}, which can now be used to solve the initial data equations. Be that as it may, before the start of the SURF program, {\tt SpECTRE} did not have a way to enforce specific masses and spins for the black holes or to avoid drifts in their orbital trajectories. This report describes how we addressed these issues.
 
-    \begin{figure}
-      \centering
-      \begin{tikzpicture}[scale=1]
-        \draw[very thick] (-2,0) circle (0.75cm);
-        \draw[very thick] (+2,0) circle (0.75cm);
-
-        \node at (-2,0) {$M^\text{Kerr}_A$};
-        \node at (+2,0) {$M^\text{Kerr}_B$};
-
-        \node at (-2,-1.4) {$\vec\chi^\text{Kerr}_A$};
-        \node at (+2,-1.4) {$\vec\chi^\text{Kerr}_B$};
-
-        \draw[->] (-2.5,-0.75) to [out=-80,in=-100] (-1.5,-0.75);
-        \draw[->] (1.5,-0.75) to [out=-80,in=-100] (2.5,-0.75);
-
-        \draw[dashed] (-1.25,0) -- (1.25,0);
-        \node at (0,0) {$\boldsymbol\times$};
-        \node at (0,1.5) {$\boldsymbol\times$};
-        \draw[->] (0,0.1) -- (0,1.4) node[pos = 0.5, anchor = east] {$\vec C_0$};
-
-        \draw[dashed] (0,0) ellipse [x radius=4cm, y radius=3cm];
-        \draw[->] (1.5,2.8) -- (3.25,2.95) node[pos = 1, anchor = north west] {$\vec v_0$};
-      \end{tikzpicture}
-      \caption{\todo{write description}}
-      \label{fig:free-data}
-    \end{figure}
-
-    \todo{explain XCTS + SKS, introducing the free data and referring to Figure \ref{fig:free-data}}
-
   \section{Methods}
+
+    \subsection{Free data}
+
+      To find initial data, {\tt SpECTRE} uses the extended conformal thin-sandwich (XCTS) decomposition (see, e.g., \cite{BaumgarteShapiro} for a review), which transforms the constraint PDEs into a system of five elliptic PDEs. Before solving the XCTS equations, we need to specify the conformal spatial metric $\bar\gamma_{ij}$, the extrinsic curvature trace $K$, and their respective time derivatives $\partial_t \bar\gamma_{ij}$ and $\partial_t K$ \cite{BaumgarteShapiro}. There are many methods for specifying these quantities, but the one that has shown to be the most promising for BBH simulations is the superposed Kerr-Schild (SKS) approach \cite{Lovelace2008}, which enforces quasiequilibrium conditions by setting $\partial_t \bar\gamma_{ij}=0$ and $\partial_t K=0$ and specifies $\bar\gamma_{ij}$ and $K$ by superposing two analytic solutions of Kerr-Schild black holes with masses $M^\text{Kerr}_A$ and $M^\text{Kerr}_B$ and with dimensionless spins $\vec\chi^\text{Kerr}_A$ and $\vec\chi^\text{Kerr}_B$.
+      
+      We also need to choose the centers of the black holes $\vec c_A$ and $\vec c_B$, which we set so that the Newtonian center of mass,
+      \begin{equation}
+        \vec C_\text{Newtonian} = \frac{M^\text{Kerr}_A \vec c_A + M^\text{Kerr}_B \vec c_B}{M^\text{Kerr}_A + M^\text{Kerr}_B},
+      \end{equation}
+      is zero and their relative distance $\vec c_A - \vec c_B = \vec D$, where $\vec D$ is chosen when setting up the simulation. To give us more control of the placement of the black holes, we add a Newtonian center of mass offset $\vec C_0$.
+
+      Having $\bar\gamma_{ij}$, $K$, $\partial_t \bar\gamma_{ij}$ and $\partial_t K$ specified, we can use the elliptic solver on the XCTS equations, three of which will be solved for the shift $\beta^i$ \cite{BaumgarteShapiro}. Similar to any elliptic PDE problem, we have to set boundary conditions before solving these equations. At the domain outer boundary (with radius $R$), we can add a constant velocity $\vec v_0$ to the boundary conditions of the shift:
+      \begin{equation} \label{eq:shift-boundary-condition}
+        \beta^i|_R = (\vec \Omega_0 \times \vec r)^i + \dot a_0 r^i + v_0^i,
+      \end{equation}
+      giving us control over the initial kinematics of the binary system.
+
+      \begin{figure}
+        \centering
+        \begin{tikzpicture}[scale=1]
+          \draw[very thick] (-2,0) circle (0.75cm);
+          \draw[very thick] (+2,0) circle (0.75cm);
+
+          \node at (-2,0) {$M^\text{Kerr}_A$};
+          \node at (+2,0) {$M^\text{Kerr}_B$};
+
+          \node at (-2,-1.4) {$\vec\chi^\text{Kerr}_A$};
+          \node at (+2,-1.4) {$\vec\chi^\text{Kerr}_B$};
+
+          \draw[->] (-2.5,-0.75) to [out=-80,in=-100] (-1.5,-0.75);
+          \draw[->] (1.5,-0.75) to [out=-80,in=-100] (2.5,-0.75);
+
+          \draw[dashed] (-1.25,0) -- (1.25,0);
+          \node at (0,0) {$\boldsymbol\times$};
+          \node at (0,1.5) {$\boldsymbol\times$};
+          \draw[->] (0,0.1) -- (0,1.4) node[pos = 0.5, anchor = east] {$\vec C_0$};
+
+          \draw[dashed] (0,0) ellipse [x radius=4cm, y radius=3cm];
+          \draw[->] (1.5,2.8) -- (3.25,2.95) node[pos = 1, anchor = north west] {$\vec v_0$};
+        \end{tikzpicture}
+        \caption{Schematic representation of the BBH free data.}
+        \label{fig:free-data}
+      \end{figure}
+
+      Figure \ref{fig:free-data} gives a schematic representation of these free data.
 
     \subsection{Calculation of asymptotic quantities}
 
@@ -323,29 +339,25 @@
       \end{equation}
       where $\Delta {\bf u}_k = {\bf u}_k - {\bf u}_{k-1}$.
 
-      Since we're iteratively computing the Jacobian with \eq{\eqref{eq:J-iteration}}, we must choose an adequate initial guess $\mathbb{J}_0$. Assume that $M_{A,B}|_0 \approx M^\text{Kerr}_{A,B}|_0$ and $\vec\chi_{A,B}|_0 \approx \vec\chi^\text{Kerr}_{A,B}|_0$, then
+      Since we're iteratively computing the Jacobian with \eq{\eqref{eq:J-iteration}}, we must choose an adequate initial guess $\mathbb{J}_0$. Assuming that $M_{A,B}|_0 \approx M^\text{Kerr}_{A,B}|_0$ and $\vec\chi_{A,B}|_0 \approx \vec\chi^\text{Kerr}_{A,B}|_0$,
       \begin{equation}
         \frac{\partial (M_{A,B} - M^*_{A,B})}{\partial M^\text{Kerr}_{A,B}}\Bigg|_0
         \approx \frac{\partial (\chi^i_{A,B} - \chi^{*,i}_{A,B})}{\partial \chi^{\text{Kerr},i}_{A,B}}\Bigg|_0
         \approx 1.
       \end{equation}
-      Using a Newtonian center of mass approximation, we know that
+      Using a Newtonian center of mass approximation,
       \begin{equation}
-        \vec C_\text{CoM} \approx \frac{M_A \vec c_A + M_B \vec c_B}{M_A + M_B} + \vec C_0,
+        \vec C_\text{CoM} \approx \vec C_0,
       \end{equation}
-      where $\vec c_{A,B}$ are the centers of black holes $A$ and $B$. Note that we choose $\vec c_{A,B}$ so that
-      \begin{equation}
-        \frac{M_A \vec c_A + M_B \vec c_B}{M_A + M_B} = 0.
-      \end{equation}
-      Hence,
+      implying that
       \begin{equation}
         \frac{\partial (C_\text{CoM}^i)}{\partial C_0^i}\Bigg|_0 \approx 1.
       \end{equation}
-      We can also use a Newtonian linear momentum approximation:
+      We can also use a Newtonian linear momentum approximation with \eq{\eqref{eq:shift-boundary-condition}} as the center-of-mass velocity:
       \begin{equation}
         \vec P_\text{ADM} \approx (M_A + M_B) \Big[ (\vec \Omega_0 \times \vec C_\text{CoM}) + \dot a_0 \vec C_\text{CoM} + \vec v_0 \Big],
       \end{equation}
-      where $\vec \Omega_0$ is the initial angular velocity and $\vec \dot a_0$ is the initial radial expansion velocity\footnote{These initial orbit parameters show up here because they are added to the boundary condition of the shift $\beta^i$.}. Typically, these initial orbit parameters are small and $M_A + M_B \approx 1$ in code units. Then,
+      where $\vec \Omega_0$ is the initial angular velocity and $\dot a_0$ is the initial radial expansion velocity. Typically, these initial orbit parameters are small and $M_A + M_B \approx 1$ in code units. Then,
       \begin{equation}
         \frac{\partial (P_\text{ADM}^i)}{\partial v_0^i}\Bigg|_0 \approx 1.
       \end{equation}
