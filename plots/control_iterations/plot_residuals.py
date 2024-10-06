@@ -6,7 +6,7 @@ import sys
 from cycler import cycler
 
 colors = ['#4c72b0', '#55a868', '#c44e52', '#8172b3', '#937860', '#da8bc3', '#8c8c8c', '#ccb974', '#64b5cd']
-markers = ['o', 's', 'D', '^', 'v', '<', '>', '*', '+']
+markers = ['o', '^', 's', 'v', 'D', '<', '>', '*', '+']
 plt.rcParams.update({
 	'text.usetex' : True,
 	'font.family' : 'serif',
@@ -49,12 +49,11 @@ residual_Padm = np.sqrt(residual_Padm_x**2 + residual_Padm_y**2 + residual_Padm_
 fig, (ax1, ax2, ax3) = plt.subplots(3, 1, squeeze=True)
 
 
-markers = ['o', '^', 'v', 's', 'D', 'P', 'p', '*', 'h', 'H', '+']
-marker_counter = 0
+counter = 0
 def plot(ax, data, label):
-	global marker_counter
-	ax.plot(iterations, data, label=label)
-	marker_counter += 1
+	global counter
+	ax.plot(iterations, data, label=label, marker=markers[counter], color=colors[counter])
+	counter += 1
 
 plot(ax1, np.abs(residual_M_A), label=r'$|M_A - M^*_A|$')
 plot(ax1, np.abs(residual_M_B), label=r'$|M_B - M^*_B|$')
@@ -74,6 +73,7 @@ ax3.set_xlabel('Control iteration')
 fig.set_size_inches(5, 8)
 plt.tight_layout()
 plt.subplots_adjust(hspace=0.04)
-fig.savefig(f'{dir}-residuals.pdf', format='pdf', bbox_inches='tight')
+# fig.savefig(f'{dir}-residuals.pdf', format='pdf', bbox_inches='tight')
+fig.savefig(f'{dir}-residuals.png', format='png', bbox_inches='tight')
 
 plt.show()
