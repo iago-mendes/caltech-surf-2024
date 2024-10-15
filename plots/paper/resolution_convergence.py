@@ -20,7 +20,7 @@ plt.rcParams.update({
 										 cycler('markerfacecolor', ['none'] * len(colors))
 })
 
-L_values = [1]
+L_values = [0]
 P_values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12]
 
 def get_data(dir):
