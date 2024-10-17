@@ -102,6 +102,6 @@ plt.subplots_adjust(wspace=0.02)
 for ax in axes[1:]:
   ax.set_yticklabels([])
 
-fig.savefig(f'root_finding.png', format='png', bbox_inches='tight')
+fig.savefig(f'root_finding_methods.png', format='png', bbox_inches='tight')
 
 plt.show()
