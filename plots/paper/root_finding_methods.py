@@ -60,6 +60,7 @@ def plot(title, args):
 plot("Delayed/damped Broyden's method", [
   [r'Delay first 2 iterations', get_data('./data/root_finding/delay_first_2_its')],
   [r'Damp with $(1-e^{-k})$', get_data('./data/root_finding/damp_initial_iterations')],
+  [r'Diagonal', get_data('./data/root_finding/diagonal')],
   [r'{scipy(broyden1)}: alpha = 1', get_data('./data/root_finding/scipy_noline')],
   [r'{scipy(broyden1)}: alpha = 0.25', get_data('./data/root_finding/scipy_noline_damped')],
 ])
