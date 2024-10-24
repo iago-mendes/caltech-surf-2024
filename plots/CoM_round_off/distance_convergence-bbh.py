@@ -2,7 +2,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from cycler import cycler
-import h5py
 
 colors = ['#4c72b0', '#55a868', '#c44e52', '#8172b3', '#937860', '#da8bc3', '#8c8c8c', '#ccb974', '#64b5cd']
 markers = ['o', '^', 's', 'v', 'D', '<', '>', '*', '+']
@@ -16,10 +15,11 @@ plt.rcParams.update({
 										 cycler('markerfacecolor', ['none'] * len(colors))
 })
 
+distance_exps = [2, 3, 4, 5, 6, 7, 8, 9]
 L_fixed = 1
-P_fixed = 6
+P_fixed = 12
 
-def get_test_residuals(unshifted_dir, shifted_dir):
+def get_bbh_residuals(unshifted_dir, shifted_dir):
   residuals = []
 
   for i, dir in enumerate([unshifted_dir, shifted_dir]):
@@ -31,28 +31,28 @@ def get_test_residuals(unshifted_dir, shifted_dir):
     centers_of_mass_y = []
     centers_of_mass_z = []
 
-    center_of_mass_entries = np.genfromtxt(f'{dir}/Test_CenterOfMass.output', delimiter=',')
+    for R in distance_exps:
+      subdir = f'R{R}L{L_fixed}P{P_fixed:02}'
 
-    for row in range(len(center_of_mass_entries)):
-      distance, L, P, center_of_mass_x, center_of_mass_y, center_of_mass_z, _ = center_of_mass_entries[row]
+      try:
+        adm_integrals = np.loadtxt(f'{dir}/{subdir}/BbhReductions/AdmIntegrals.dat', comments='#')
 
-      if L != L_fixed or P != P_fixed:
-        continue
+        center_of_mass_x = adm_integrals[4]
+        center_of_mass_y = adm_integrals[5]
+        center_of_mass_z = adm_integrals[6]
+
+        # if center_of_mass_x == 0.0 or center_of_mass_y == 0.0 or center_of_mass_z - z_shift == 0.0:
+        #   print(f'\tSkipped {subdir} due to 0.0 value')
+        #   continue
+
+        distances.append(float(f'1.e{R}'))
+        centers_of_mass_x.append(np.abs(center_of_mass_x))
+        centers_of_mass_y.append(np.abs(center_of_mass_y))
+        centers_of_mass_z.append(np.abs(center_of_mass_z - z_shift))
+
+      except Exception as e:
+        print(f'\tSkipped {subdir} due to error: {e}')
       
-      if center_of_mass_x == 0.0 or center_of_mass_y == 0.0 or center_of_mass_z - z_shift == 0.0:
-        print(f'\tSkipped {distance} due to 0.0 value')
-        continue
-
-      distances.append(distance)
-      centers_of_mass_x.append(np.abs(center_of_mass_x))
-      centers_of_mass_y.append(np.abs(center_of_mass_y))
-      centers_of_mass_z.append(np.abs(center_of_mass_z - z_shift))
-      # centers_of_mass_z.append(center_of_mass_z)
-    
-    # centers_of_mass_z = np.array(centers_of_mass_z)
-    # centers_of_mass_z -= centers_of_mass_z[-1]
-    # centers_of_mass_z = np.abs(centers_of_mass_z[:-1])
-    
     residuals.append({
       'distances': distances,
       'centers_of_mass_x': centers_of_mass_x,
@@ -62,7 +62,7 @@ def get_test_residuals(unshifted_dir, shifted_dir):
 
   return residuals
 
-fig, axes = plt.subplots(3, 4, squeeze=True)
+fig, axes = plt.subplots(3, 3, squeeze=True)
 axes = np.transpose(axes)
 col = 0
 
@@ -81,26 +81,23 @@ def plot(title, residuals):
     ax1.plot(distances, residuals[i]['centers_of_mass_x'], label=label, color=colors[i], marker=markers[i])
     ax2.plot(distances, residuals[i]['centers_of_mass_y'], label=label, color=colors[i], marker=markers[i])
     ax3.plot(distances, residuals[i]['centers_of_mass_z'], label=label, color=colors[i], marker=markers[i])
-  
+
     for i, row in enumerate([residuals[i]['centers_of_mass_x'], residuals[i]['centers_of_mass_y'], residuals[i]['centers_of_mass_z']]):
-      data_min[i] = min(data_min[i], np.min(row))
+      row = np.array(row)
+      data_min[i] = min(data_min[i], np.min(row[row != 0]))
       data_max[i] = max(data_max[i], np.max(row))
 
 plot(
-  r'Isotropic [$\psi^4 n^i$]',
-  get_test_residuals('../adm_integrals/data/isotropic/surface', '../adm_integrals/data/isotropic_shifted/surface')
+  r'BBH [$\psi^4 n^i$]',
+  get_bbh_residuals('./data/bbh/psi4', './data/bbh_shifted/psi4')
 )
 plot(
-  r'Isotropic [$(\psi^4 - 1) n^i$]',
-  get_test_residuals('../adm_integrals/data/isotropic/surface-new', '../adm_integrals/data/isotropic_shifted/surface-new')
+  r'BBH [$(\psi^4 - 1) n^i$]',
+  get_bbh_residuals('./data/bbh/psi4-1', './data/bbh_shifted/psi4-1')
 )
 plot(
-  r'Isotropic [$(\psi^4 - \langle \psi^4 \rangle) n^i$]',
-  get_test_residuals('../adm_integrals/data/isotropic/surface-avg', '../adm_integrals/data/isotropic_shifted/surface-avg')
-)
-plot(
-  r'Isotropic [$((\psi-1)^4 + ...) n^i$]',
-  get_test_residuals('./data/isotropic/psi-1', './data/isotropic_shifted/psi-1')
+  r'BBH [$((\psi-1)^4 + ...) n^i$]',
+  get_bbh_residuals('./data/bbh/psi-1', './data/bbh_shifted/psi-1')
 )
 
 for ax in axes.flatten():
@@ -134,11 +131,10 @@ axes[0,2].set_ylabel(r'$\Bigg| C_{CoM}^z - C_0^z \Bigg|$')
 # Add legend to one axis
 axes[0, 0].legend()
 
-fig.set_size_inches(15,10)
+fig.set_size_inches(12,8)
 plt.tight_layout()
-plt.subplots_adjust(wspace=0.03, hspace=0.025)
+plt.subplots_adjust(wspace=0.03, hspace=0.035)
 
-# fig.savefig(f'distance_convergence_CoM_round_off_with_avg.pdf', format='pdf', bbox_inches='tight')
-fig.savefig(f'distance_convergence_CoM_round_off_with_avg.png', format='png', bbox_inches='tight')
+fig.savefig(f'distance_convergence-bbh.png', format='png', bbox_inches='tight')
 
 plt.show()
