@@ -22,33 +22,21 @@ plt.rcParams.update({
 										 cycler('markersize', markersizes) 
 })
 
-# title = r'L=0, P=9 (60000 points, $N^{1/3}\approx39$)'
+# title = r'L=0, P=9 (60000 points, $N^{1/3} \approx 39$)'
 # fname_ext = 'P09'
 # dir = './data/root_finding/damping-P09'
 
-# title = r'L=0, P=9 (60000 points, $N^{1/3}\approx39$)'
-# fname_ext = 'P9-no1'
-# dir = './data/root_finding/damping-mid_resolution-no1'
+# title = r'L=0, P=12 (128778 points, $N^{1/3} \approx 51$)'
+# fname_ext = 'P12'
+# dir = './data/root_finding/damping-P12'
 
-title = r'L=0, P=12 (128778 points, $N^{1/3}\approx51$)'
-fname_ext = 'P12'
-dir = './data/root_finding/damping-P12'
-
-# title = r'L=0, P=15 (236544 points, $N^{1/3}\approx62$)'
+# title = r'L=0, P=15 (236544 points, $N^{1/3} \approx 62$)'
 # fname_ext = 'P15'
-# dir = './data/root_finding/damping-lower_tolerance'
+# dir = './data/root_finding/damping-P15'
 
-# title = r'L=1, P=6'
-# fname_ext = 'L1P6'
-# dir = './data/root_finding/diagonal'
-
-# title = r'delay'
-# fname_ext = 'delay'
-# dir = './data/root_finding/delay_first_2_its'
-
-# title = r'L=1, P=8'
-# fname_ext = 'L1P8'
-# dir = './data/root_finding/delay-L1P8'
+title = r'L=1, P=6 (171696 points, $N^{1/3} \approx 56$)'
+fname_ext = 'L1P06'
+dir = './data/root_finding/damping-L1P06'
 
 control_data = np.loadtxt(f'{dir}/ControlParamsData.txt', delimiter=',', dtype=float)
 
